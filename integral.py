@@ -110,11 +110,15 @@ def calculate_I_comp(comp, mag_x, omega, r_c, a, recalculate=False, save=True):
         # Create a lambda function for the integrand
         if comp == "r2":
             integrand = lambda r, theta: get_f_comp(comp, r, theta, mag_x, omega, a)
+
+            # Calculate the integral
+            I_comp, error_comp = mp.quad(integrand, r_range, theta_range, error=True, maxdegree=15)
+
         else:
             integrand = lambda r: get_f_comp(comp, r, theta, mag_x, omega, a)
 
-        # Calculate the integral
-        I_comp, error_comp = mp.quad(integrand, r_range, error=True, maxdegree=15)
+            # Calculate the integral
+            I_comp, error_comp = mp.quad(integrand, r_range, error=True, maxdegree=15)
 
         # Save the calculated integral and error to a file
         if save:
