@@ -23,80 +23,64 @@ phi_hat = sph.phi_hat
 # Define symbols
 B_r, B_theta, B_phi, a, omega, mag_x, t, g_ac, phi0 = sp.symbols("B_r, B_theta, B_phi, a, omega, mag_x, t, g_ac, phi0", constant=True)
 
-# Define the integrand f_phi1
-def calculate_f_phi1(r, theta, mag_x, omega, a):
+# Define the integrand
+def get_f_comp(comp, r, theta, mag_x, omega, a):
     """
     Args:
+        comp (str): Component of the integrand to calculate.
         r (float): Radial distance.
-        theta (float): Angular distance.
+        theta (float): Angular distance
         mag_x (float): Distance from Galactic Centre to the measurement point.
         omega (float): Oscillation frequency.
         a (float): Scaling constant of the density profile.
 
     Returns:
-        complex: Value of the integrand f_phi1.
+        complex: Value of the integrand.
     """
 
-    # f_phi1 = (r * (7 * a * r**2 - 1) * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
-    #           / (1 + a * r**2)**5 
-    #           / mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
-    #           * mp.sin(theta))
+    if comp == "phi1":
+        # f_phi1 = (r * (7 * a * r**2 - 1) / (1 + a * r**2)**5 
+        #           * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
+        #           / mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
+        #           * mp.sin(theta))
+        
+        f_phi1 = ((7 * a * r**2 - 1) / (1 + a * r**2)**5 
+                * (- j * mp.exp(j * omega * (mag_x + r)) + j * mp.exp(j * omega * (mag_x - r))) 
+                / mag_x / omega)
+        
+        return f_phi1
     
-    f_phi1 = ((7 * a * r**2 - 1) / (1 + a * r**2)**5 
-              * (- j * mp.exp(j * omega * (mag_x + r)) + j * mp.exp(j * omega * (mag_x - r))) 
-              / mag_x / omega)
+    elif comp == "phi2":
+        # f_phi2 = (r**2 / (1 + a * r**2)**4 
+        #           * (r - mag_x * mp.cos(theta)) * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
+        #           / (mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
+        #           * mp.sin(theta))
+        
+        f_phi2 = (1 / (1 + a * r**2)**4 
+                * (- ((mag_x**2 - r**2) * omega**2 * mp.ei(j * omega * (mag_x + r)) + mp.exp(j * omega * (mag_x + r)) * (j * omega * (mag_x + r) - 1)) 
+                    + ((mag_x**2 - r**2) * omega**2 * mp.ei(j * omega * (mag_x - r)) + mp.exp(j * omega * (mag_x - r)) * (j * omega * (mag_x - r) - 1))) 
+                    / (2 * mag_x * omega**2))
+        
+        return f_phi2
     
-    return f_phi1
+    elif comp == "phi3":
+        # f_phi3 = (r**2 / (1 + a * r**2)**4 
+        #           * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
+        #           / (mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
+        #           * mp.sin(theta)**2)
 
-# Define the integrand f_phi2
-def calculate_f_phi2(r, theta, mag_x, omega, a):
-    """
-    Args:
-        r (float): Radial distance.
-        theta (float): Angular distance.
-        mag_x (float): Distance from Galactic Centre to the measurement point.
-        omega (float): Oscillation frequency.
-        a (float): Scaling constant of the density profile.
-
-    Returns:
-        complex: Value of the integrand f_phi1.
-    """
-
-    # f_phi2 = (r**2 * (r - mag_x * mp.cos(theta)) * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
-    #           / (1 + a * r**2)**4 
-    #           / (mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
-    #           * mp.sin(theta))
+        f_phi3 = (r / mag_x / (1 + a * r**2)**4 
+                * (mp.ei(j * omega * (mag_x + r)) - mp.ei(j * omega * (mag_x - r))))
+        
+        return f_phi3
     
-    f_phi2 = (1 / (1 + a * r**2)**4 
-              * (- ((mag_x**2 - r**2) * omega**2 * mp.ei(j * omega * (mag_x + r)) + mp.exp(j * omega * (mag_x + r)) * (j * omega * (mag_x + r) - 1)) 
-                 + ((mag_x**2 - r**2) * omega**2 * mp.ei(j * omega * (mag_x - r)) + mp.exp(j * omega * (mag_x - r)) * (j * omega * (mag_x - r) - 1))) 
-                 / (2 * mag_x * omega**2))
-    
-    return f_phi2
-
-# Define the integrand f_phi3
-def calculate_f_phi3(r, theta, mag_x, omega, a):
-    """
-    Args:
-        r (float): Radial distance.
-        theta (float): Angular distance.
-        mag_x (float): Distance from Galactic Centre to the measurement point.
-        omega (float): Oscillation frequency.
-        a (float): Scaling constant of the density profile.
-
-    Returns:
-        complex: Value of the integrand f_phi1.
-    """
-
-    # f_phi3 = (r**2 * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
-    #           / (1 + a * r**2)**4 
-    #           / (mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
-    #           * mp.sin(theta)**2)
-
-    f_phi3 = (r / mag_x / (1 + a * r**2)**4 
-              * (mp.ei(j * omega * (mag_x + r)) - mp.ei(j * omega * (mag_x - r))))
-    
-    return f_phi3
+    elif comp == "r2":
+        f_r2 = (r / (1 + a * r**2)**4 
+                * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
+                / mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))
+                * mp.cos(theta))
+        
+        return f_r2
 
 # Calculate the integral
 def calculate_I_comp(comp, mag_x, omega, r_c, a, recalculate=False, save=True):
@@ -124,15 +108,10 @@ def calculate_I_comp(comp, mag_x, omega, r_c, a, recalculate=False, save=True):
         r_range = [0, 10 * r_c]
 
         # Create a lambda function for the integrand
-        if comp == "phi3":
-            # integrand = lambda r, theta: calculate_f_phi3(r, theta, mag_x, omega, a)
-            integrand = lambda r: calculate_f_phi3(r, theta, mag_x, omega, a)
-        elif comp == "phi1":
-            # integrand = lambda r, theta: calculate_f_phi1(r, theta, mag_x, omega, a)
-            integrand = lambda r: calculate_f_phi1(r, theta, mag_x, omega, a)
-        elif comp == "phi2":
-            # integrand = lambda r, theta: calculate_f_phi2(r, theta, mag_x, omega, a)
-            integrand = lambda r: calculate_f_phi2(r, theta, mag_x, omega, a)
+        if comp == "r2":
+            integrand = lambda r, theta: get_f_comp(comp, r, theta, mag_x, omega, a)
+        else:
+            integrand = lambda r: get_f_comp(comp, r, theta, mag_x, omega, a)
 
         # Calculate the integral
         I_comp, error_comp = mp.quad(integrand, r_range, error=True, maxdegree=15)
