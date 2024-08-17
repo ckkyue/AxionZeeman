@@ -29,7 +29,7 @@ def calculate_f_phi1(r, theta, mag_x, omega, a):
     Args:
         r (float): Radial distance.
         theta (float): Angular distance.
-        mag_x (float): Distance from the source to the measurement point.
+        mag_x (float): Distance from Galactic Centre to the measurement point.
         omega (float): Oscillation frequency.
         a (float): Scaling constant of the density profile.
 
@@ -48,13 +48,13 @@ def calculate_f_phi1(r, theta, mag_x, omega, a):
     
     return f_phi1
 
-# Define the integrand f_phi2'
+# Define the integrand f_phi2
 def calculate_f_phi2(r, theta, mag_x, omega, a):
     """
     Args:
         r (float): Radial distance.
         theta (float): Angular distance.
-        mag_x (float): Distance from the source to the measurement point.
+        mag_x (float): Distance from Galactic Centre to the measurement point.
         omega (float): Oscillation frequency.
         a (float): Scaling constant of the density profile.
 
@@ -80,7 +80,7 @@ def calculate_f_phi3(r, theta, mag_x, omega, a):
     Args:
         r (float): Radial distance.
         theta (float): Angular distance.
-        mag_x (float): Distance from the source to the measurement point.
+        mag_x (float): Distance from Galactic Centre to the measurement point.
         omega (float): Oscillation frequency.
         a (float): Scaling constant of the density profile.
 
@@ -103,7 +103,7 @@ def calculate_I_comp(comp, mag_x, omega, r_c, a, recalculate=False, save=True):
     """
     Args:
         comp (str): Component of the integral to calculate ("phi1", "phi2", or "phi3").
-        mag_x (float): Distance from the source to the measurement point.
+        mag_x (float): Distance from Galactic Centre to the measurement point.
         omega (float): Oscillation frequency.
         r_c (float): Core radius of the soliton.
         a (float): Scaling constant of the density profile.

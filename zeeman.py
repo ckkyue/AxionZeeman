@@ -62,6 +62,7 @@ def calculate_B1(potential_type, particle_type, t, params, recalculate=False, sa
 
     # Common parameters of sech and flat potentials
     B_bar = params.get("B_bar")
+    angle = params.get("angle")
     mag_x = params.get("mag_x")
     phi0 = params.get("phi0")
     g_ac = params.get("g_ac")
@@ -144,7 +145,7 @@ def calculate_B1(potential_type, particle_type, t, params, recalculate=False, sa
         B1_r = np.real(B1_r_complex)
         B1_theta = np.real(B1_theta_complex)
         B1_phi = np.real(B1_phi_complex)
-        B1 = np.sqrt(B1_r**2 + B1_theta**2 + B1_phi**2)
+        B1 = np.sqrt(B1_r**2 + B1_theta**2 + B1_phi**2) * np.cos(angle)
 
         return B1
 
@@ -376,7 +377,7 @@ def main():
     coord_l1544 = SkyCoord(ra=ra_l1544, dec=dec_l1544, distance=dist_l1544)
     cart_l1544 = coord_l1544.cartesian
 
-    # Parameters for the Galactic Centre
+    # Parameters for Galactic Centre
     dist_gc = 8 * 1e3 * u.pc # Distance to Galactic Centre
     l_gc = 0 * u.deg # Galactic longitude
     b_gc = 0 * u.deg # Galactic latitude
@@ -384,6 +385,16 @@ def main():
     # Create SkyCoord object for Galactic Centre and convert to Cartesian
     coord_gc = SkyCoord(l=l_gc, b=b_gc, distance=dist_gc, frame="galactic")
     cart_gc = coord_gc.icrs.cartesian
+
+    # Position vector from Galactic Centre to L1544
+    cart_gctol1544 = cart_l1544 - cart_gc
+
+    # Calculate the distance of L1544 from Galactic Centre (pc)
+    mag_x = np.linalg.norm(cart_gctol1544.xyz)
+
+    # Calculate the angle between the vector from Galactic Centre to L1544 and the vector to L1544
+    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (mag_x * np.linalg.norm(cart_l1544.xyz)))
+    print(f"The angle between the vector from Galactic Centre to L1544 and the vector to L1544 is {angle:.2f} rad.")
 
     # Calculate the internal magnetic field
     B_int = 1 / (4 * pi * epsilon_0) * e_au / (m_e * c**2 * r_e**3) * hbar
@@ -396,7 +407,9 @@ def main():
     # Common parameters
     B_bar = 1e-10 # Background magnetic field (T)
     print(f"The magnitude of background magnetic field is {B_bar * T_to_eV2:.2e}eV^2.")
-    mag_x = (cart_l1544 - cart_gc).norm().value * pc_to_m * m_to_eVminus1 # Calculate distance of L1544 from Galactic Centre (eV^-1)
+
+    # Calculate distance of L1544 from Galactic Centre (eV^-1)
+    mag_x = mag_x.value * pc_to_m * m_to_eVminus1
     print(f"The distance of L1544 from Galactic Centre is {mag_x:.2e}eV^-1.")
 
     # Set fiducial parameters
@@ -412,6 +425,7 @@ def main():
         # Define parameters dictionary
         params = {
             "B_bar": B_bar,
+            "angle": angle,
             "mag_x": mag_x,
             "phi0": phi0,
             "g_ac": g_ac,
@@ -455,6 +469,7 @@ def main():
         params = {
             "B_bar": B_bar,
             "mag_x": mag_x,
+            "angle": angle,
             "phi0": phi0,
             "X_bar": X_bar,
             "g_ac": g_ac,
