@@ -1,0 +1,2 @@
+# AxionZeeman
+This repository contains code for estimating the magnitude of the magnetic field induced by a dense axion soliton located at the centre of the Milky Way. The code then calculates the Zeeman effect on atomic transitions due to this induced magnetic field. The code can also be applied to a dark photon soliton by incorporating a pseudo-magnetic field representing the circular polarization vector.
