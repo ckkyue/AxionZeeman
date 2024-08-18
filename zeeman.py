@@ -127,7 +127,7 @@ def calculate_B1(potential_type, particle_type, t, params, recalculate=False, sa
         # Calculate the r components of the integral
         I_r1 = I_phi3
         I_r1_int = 1 / 2 * j * mag_x * omega * I_r1
-        I_r2 = calculate_I_comp("r2", mag_x, omega, r_c, a, recalculate=recalculate, save=save)
+        I_r2, error_r2 = calculate_I_comp("r2", mag_x, omega, r_c, a, recalculate=recalculate, save=save)
         I_r2_int = 1 / 2 * I_r2
 
         # Calculate the theta components of the integral
