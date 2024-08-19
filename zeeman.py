@@ -168,11 +168,15 @@ def calculate_rho(rho0, a, r, r_c, approx=False):
 
     if approx:
         if r <= r_c:
+
             return rho0
+        
         elif r > r_c:
+
             return 0
     else:
         rho = rho0 / (1 + a * r**2)**8
+
     return rho
 
 # Calculate the axion field strength

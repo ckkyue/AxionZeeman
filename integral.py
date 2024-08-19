@@ -64,13 +64,13 @@ def get_f_comp(comp, r, theta, mag_x, omega, a):
         return f_phi2
     
     elif comp == "phi3":
-        f_phi3 = (r**2 / (1 + a * r**2)**4 
-                  * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
-                  / (mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
-                  * mp.sin(theta)**2)
+        # f_phi3 = (r**2 / (1 + a * r**2)**4 
+        #           * mp.exp(j * omega * mp.sqrt(mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta))) 
+        #           / (mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
+        #           * mp.sin(theta)**2)
 
-        # f_phi3 = (r / mag_x / (1 + a * r**2)**4 
-        #         * (mp.ei(j * omega * (mag_x + r)) - mp.ei(j * omega * (mag_x - r))))
+        f_phi3 = (r / mag_x / (1 + a * r**2)**4 
+                * (mp.ei(j * omega * (mag_x + r)) - mp.ei(j * omega * (mag_x - r))))
         
         return f_phi3
     
@@ -108,7 +108,7 @@ def calculate_I_comp(comp, mag_x, omega, r_c, a, recalculate=False, save=True):
         r_range = [0, 10 * r_c]
 
         # Create a lambda function for the integrand
-        if comp in ("phi3", "r2"):
+        if comp in ("r2"):
             integrand = lambda r, theta: get_f_comp(comp, r, theta, mag_x, omega, a)
 
             # Calculate the integral
