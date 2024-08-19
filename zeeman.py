@@ -43,22 +43,25 @@ def lower_rspace(string):
     return string.lower().replace(" ", "")
 
 # Calculate the magnitude of magnetic field
-def calculate_B1(potential_type, particle_type, t, params, recalculate=False, save=True):
+def calculate_B1(potential_type, particle_type, t, params, recalculates, save=True):
     """
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
         particle_type (str): Type of particle ("axion" or "dark photon").
         t (float): Time.
         params (dict): Dictionary of parameters.
-        recalculate (bool, optional): Whether to recalculate the integrals. Defaults to False.
+        recalculates (dict): Dictionary indicating whether to recalculate each integral component.
         save (bool, optional): Whether to save the calculated integrals. Defaults to True.
 
     Returns:
         float: Magnitude of the magnetic field.
     """
 
-    # Check whether to recalculate
-    recalculate = t == 0 and recalculate
+    # Check whether to recalculate each component of the integral
+    recalculate_phi1 = t == 0 and recalculates.get("phi1")
+    recalculate_phi2 = t == 0 and recalculates.get("phi2")
+    recalculate_phi3 = t == 0 and recalculates.get("phi3")
+    recalculate_r2 = t == 0 and recalculates.get("r2")
 
     # Common parameters of sech and flat potentials
     B_bar = params.get("B_bar")
@@ -117,17 +120,17 @@ def calculate_B1(potential_type, particle_type, t, params, recalculate=False, sa
             coeff = epsilon * m_d**2 * X_bar
 
         # Calculate the phi components of the integral
-        I_phi1, error_phi1 = calculate_I_comp("phi1", mag_x, omega, r_c, a, recalculate=recalculate, save=save)
+        I_phi1, error_phi1 = calculate_I_comp("phi1", mag_x, omega, r_c, a, recalculate=recalculate_phi1, save=save)
         I_phi1_int = - 1 / 2 * I_phi1
-        I_phi2, error_phi2 = calculate_I_comp("phi2", mag_x, omega, r_c, a, recalculate=recalculate, save=save)
+        I_phi2, error_phi2 = calculate_I_comp("phi2", mag_x, omega, r_c, a, recalculate=recalculate_phi2, save=save)
         I_phi2_int = 1 / 2 * j * omega * I_phi2
-        I_phi3, error_phi3 = calculate_I_comp("phi3", mag_x, omega, r_c, a, recalculate=recalculate, save=save)
+        I_phi3, error_phi3 = calculate_I_comp("phi3", mag_x, omega, r_c, a, recalculate=recalculate_phi3, save=save)
         I_phi3_int = - 1 / 2 * j * mag_x * omega * I_phi3
 
         # Calculate the r components of the integral
         I_r1 = I_phi3
         I_r1_int = 1 / 2 * j * mag_x * omega * I_r1
-        I_r2, error_r2 = calculate_I_comp("r2", mag_x, omega, r_c, a, recalculate=recalculate, save=save)
+        I_r2, error_r2 = calculate_I_comp("r2", mag_x, omega, r_c, a, recalculate=recalculate_r2, save=save)
         I_r2_int = 1 / 2 * I_r2
 
         # Calculate the theta components of the integral
@@ -499,9 +502,17 @@ def main():
 
     # Define the time range
     ts = np.linspace(0, 4 * period, 1000)
+    
+    # Whether to recalculate each integral component
+    recalculates = {
+        "phi1": False,
+        "phi2": False,
+        "phi3": False,
+        "r2": False
+    }
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, params, recalculate=False, save=True) for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, params, recalculates, save=True) for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
