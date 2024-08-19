@@ -278,6 +278,7 @@ def calculate_delta_E(B):
     """
 
     delta_E = mu_B * B
+    
     return delta_E
 
 # Plot the data
