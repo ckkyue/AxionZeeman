@@ -3,6 +3,8 @@ from astropy.constants import M_sun
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from integral import calculate_I_comp
+from matplotlib import colormaps as cm
+from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -366,6 +368,87 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, split2=Fa
     # Show the plot
     plt.show()
 
+# Generate meshgrid
+def generate_meshgrid(x_range, y_range, z_range, num_points):
+    """
+    Args:
+        x_range (tuple): The range of values for the x-axis.
+        y_range (tuple): The range of values for the y-axis.
+        z_range (tuple): The range of values for the z-axis.
+        num_points (int): The number of points to generate along each axis.
+
+    Returns:
+        tuple: Three arrays representing the x, y, and z coordinates of the meshgrid points.
+    """
+
+    # Generate evenly spaced data points along each axis
+    xs = np.linspace(x_range[0], x_range[1], num_points)
+    ys = np.linspace(y_range[0], y_range[1], num_points)
+    zs = np.linspace(z_range[0], z_range[1], num_points)
+
+    # Create a meshgrid for 3D plotting
+    X, Y, Z = np.meshgrid(xs, ys, zs)
+
+    # Flatten the meshgrid for scatter plotting
+    xs = X.flatten()
+    ys = Y.flatten()
+    zs = Z.flatten()
+
+    return xs, ys, zs
+
+# Plots the 3D data
+def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_name, cmap_name="plasma_r", alpha=0.7, s=20, save=False):
+    """
+    Args:
+        xs (array): x-coordinates of the data points.
+        ys (array): y-coordinates of the data points.
+        zs (array): z-coordinates of the data points.
+        ws (array): Values for color-coding.
+        xlabel (str): Label for the x-axis.
+        ylabel (str): Label for the y-axis.
+        zlabel (str): Label for the z-axis.
+        wlabel (str): Label for the colorbar.
+        title (str): Title of the plot.
+        figure_name (str): Name of the file to save the plot (if save is True).
+        cmap_name (str, optional): Name of the colormap to use. Defaults to "plasma".
+        alpha (float, optional): Transparency of the markers. Defaults to 0.7.
+        s (int, optional): Size of the markers. Defaults to 20.
+        save (bool, optional): Whether to save the plot. Defaults to False.
+    """
+
+    # Create a figure and an axes object for 3D plotting
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, projection="3d")
+
+    # Get the colormap
+    cmap = cm.get_cmap(cmap_name)
+
+    # Create a scatter plot with adjustments
+    scatter = ax.scatter(xs, ys, zs, c=ws, cmap=cmap, alpha=alpha, s=s)
+
+    # Add a colorbar to the plot
+    cbar = plt.colorbar(scatter)
+    cbar.set_label(wlabel)
+
+    # Set axis labels
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
+
+    # Set the title
+    plt.title(title)
+
+    # Adjust the spacing
+    plt.tight_layout()
+
+    # Save the plot if required
+    if save:
+        filename = os.path.join("Figure", figure_name)
+        plt.savefig(filename, dpi=300)
+    
+    # Show the plot
+    plt.show()
+
 # Main program
 def main():
     # Define the paths for the folders
@@ -545,27 +628,42 @@ def main():
     if potential_type == "flat" and particle_type == "axion":
         # Define radial range
         rs = np.linspace(0, 3 * r_c, 10000)
-        r_scaleds = rs / r_c # Scaled radius
+        rs_scaled = rs / r_c # Scaled radius
+
+        # Define the 3D space range
+        x_range = (- 2 * r_c, 2 * r_c)
+        y_range = (- 2 * r_c, 2 * r_c)
+        z_range = (- 2 * r_c, 2 * r_c)
+
+        # Generate the meshgrid
+        xs, ys, zs = generate_meshgrid(x_range, y_range, z_range, 15)
+        xs_scaled = xs / r_c
+        ys_scaled = ys / r_c
+        zs_scaled = zs / r_c
 
         # Calculate the axion density profile
         rhos = [calculate_rho(rho0, a_a, r, r_c) for r in rs]
         rhos_approx = [calculate_rho(rho0, a_a, r, r_c, approx=True) for r in rs]
+        rhos_3d = calculate_rho(rho0, a_a, np.sqrt(xs**2 + ys**2 + zs**2), r_c)
 
         # Calculate axion field strength from density
         phis = [calculate_phi(rho0, m_a) for rho0 in rhos]
         phis_approx = [calculate_phi(rho0, m_a) for rho0 in rhos_approx]
 
         # Plot axion density profile
-        plot_data(r_scaleds, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
+        plot_data(rs_scaled, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
 
         # Plot exact and approximate axion density profiles
-        plot_data(r_scaleds, [rhos, rhos_approx], ["Exact", "Approximate"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhoapprox.png", save=True)
+        plot_data(rs_scaled, [rhos, rhos_approx], ["Exact", "Approximate"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhoapprox.png", save=True)
+
+        # Plot axion density profile in 3D
+        plot3D_data(xs_scaled, ys_scaled, zs_scaled, rhos_3d, r"$x/r_c$", r"$y/r_c$", r"$z/r_c$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile in 3D", "axionrho3d.png", save=True)
 
         # Plot axion field strength
-        plot_data(r_scaleds, phis, None, r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphim{m_a}.png", save=True)
+        plot_data(rs_scaled, phis, None, r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphim{m_a}.png", save=True)
 
         # Plot exact and approximate axion field strengths
-        plot_data(r_scaleds, [phis, phis_approx], ["Exact", "Approximate"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphiapproxm{m_a}.png", save=True)
+        plot_data(rs_scaled, [phis, phis_approx], ["Exact", "Approximate"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphiapproxm{m_a}.png", save=True)
 
 # Run the main program
 if __name__ == "__main__":
