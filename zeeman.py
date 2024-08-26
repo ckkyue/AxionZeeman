@@ -493,7 +493,7 @@ def main():
 
     # Specify the potential and particle types
     potential_type = "flat" # sech or flat
-    particle_type = "axion" # axion or dark photon
+    particle_type = "dark photon" # axion or dark photon
 
     # Common parameters
     B_bar = 1e-10 # Background magnetic field (T)
