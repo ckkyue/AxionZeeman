@@ -105,7 +105,7 @@ def calculate_I_comp(comp, mag_x, omega, r_c, a, recalculate=False, save=True):
     if not os.path.exists(filename) or recalculate:
         # Define the limits of integration
         theta_range = [0, mp.pi]
-        r_range = [0, 10 * r_c]
+        r_range = [0, 3 * r_c]
 
         # Create a lambda function for the integrand
         if comp in ("r2"):
