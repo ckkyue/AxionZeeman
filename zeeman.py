@@ -1,4 +1,4 @@
-# Imports
+# Imports   
 from astropy.constants import M_sun
 from astropy import units as u
 from astropy.coordinates import SkyCoord
@@ -592,10 +592,10 @@ def main():
     
     # Whether to recalculate each integral component
     recalculates = {
-        "phi1": True,
-        "phi2": True,
-        "phi3": True,
-        "r2": True
+        "phi1": False,
+        "phi2": False,
+        "phi3": False,
+        "r2": False
     }
 
     # Calculate B1 values
