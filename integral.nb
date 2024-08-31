@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     54771,       1609]
-NotebookOptionsPosition[     52875,       1570]
-NotebookOutlinePosition[     53292,       1587]
-CellTagsIndexPosition[     53249,       1584]
+NotebookDataLength[     95321,       2809]
+NotebookOptionsPosition[     93192,       2766]
+NotebookOutlinePosition[     93611,       2783]
+CellTagsIndexPosition[     93568,       2780]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -947,8 +947,10 @@ Cell[BoxData[
    3.934027979370563*^9, 3.934028266153284*^9, 3.934029297036702*^9, 
    3.934029465802045*^9, 3.934030390758231*^9, 3.934030471797002*^9, 
    3.9340306490837393`*^9, 3.934031987692604*^9, 3.934032589123324*^9, 
-   3.934067521292881*^9, 3.934067792969221*^9, 3.9340774663777533`*^9},
- CellLabel->"Out[2]=",ExpressionUUID->"ac6fc19e-02d6-4481-a6dc-0a650b685c39"]
+   3.934067521292881*^9, 3.934067792969221*^9, 3.934077466377754*^9, 
+   3.93408396891348*^9, 3.934094573843701*^9, 3.934095246755576*^9, 
+   3.934095606116742*^9},
+ CellLabel->"Out[2]=",ExpressionUUID->"6d0138b5-b629-4820-af1e-2f2369ba209a"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1327,8 +1329,8 @@ Cell[BoxData[
    3.934029300099504*^9, 3.9340294692424517`*^9, 3.934030341170419*^9, 
    3.934030396483132*^9, 3.934030476752905*^9, 3.93403199390602*^9, 
    3.934032593627252*^9, 3.934067682165458*^9, 3.934067797008343*^9, 
-   3.934077472079691*^9},
- CellLabel->"Out[3]=",ExpressionUUID->"c0e4344a-babd-4adb-bbd1-f8f6bc0404b8"]
+   3.934077472079691*^9, 3.934094578183338*^9, 3.9340956099074802`*^9},
+ CellLabel->"Out[3]=",ExpressionUUID->"ee5731bf-1655-4218-80c2-01d692f6084e"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1344,8 +1346,9 @@ Cell[BoxData["0"], "Output",
  CellChangeTimes->{3.934029308030451*^9, 3.934029473374226*^9, 
   3.934030343426887*^9, 3.934030399850093*^9, 3.934030479514777*^9, 
   3.934030657100868*^9, 3.9340319971952744`*^9, 3.934032596170508*^9, 
-  3.934067684938634*^9, 3.93406779975176*^9, 3.934077474838172*^9},
- CellLabel->"Out[4]=",ExpressionUUID->"dd15b989-3e61-4c2e-94d7-db31b19f36ff"]
+  3.934067684938634*^9, 3.93406779975176*^9, 3.934077474838172*^9, 
+  3.934083973021228*^9, 3.934094581226887*^9, 3.93409561251858*^9},
+ CellLabel->"Out[4]=",ExpressionUUID->"0a412937-5cb8-4f21-be7b-1db1ad63e00f"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -1440,7 +1443,8 @@ Cell[BoxData[
     RowBox[{"integralinf", "=", 
      RowBox[{"integral", "/.", 
       RowBox[{"r", "->", 
-       RowBox[{"10", "*", "rc"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+       RowBox[{"10000000000000", "*", "rc"}]}]}]}], ";"}], 
+   "\[IndentingNewLine]", 
    RowBox[{"(*", 
     RowBox[{
     "Calculate", " ", "the", " ", "numerical", " ", "value", " ", "of", " ", 
@@ -1460,8 +1464,10 @@ Cell[BoxData[
   3.934030425727865*^9, 3.93403045792524*^9}, {3.934030493414435*^9, 
   3.9340305203146772`*^9}, {3.934030569981911*^9, 3.934030619397722*^9}, {
   3.934032431649319*^9, 3.934032468823484*^9}, {3.9340675127858353`*^9, 
-  3.934067513640921*^9}, {3.9340677536391993`*^9, 3.9340677840497627`*^9}},
- CellLabel->"In[19]:=",ExpressionUUID->"1f9f17f5-c444-4b02-ad5e-23bd2f53736b"],
+  3.934067513640921*^9}, {3.9340677536391993`*^9, 3.9340677840497627`*^9}, {
+  3.934083980648653*^9, 3.934083990883874*^9}, {3.934095617301222*^9, 
+  3.934095632486013*^9}},
+ CellLabel->"In[27]:=",ExpressionUUID->"1f9f17f5-c444-4b02-ad5e-23bd2f53736b"],
 
 Cell[BoxData[
  TemplateBox[{
@@ -1469,29 +1475,31 @@ Cell[BoxData[
    "\"\\!\\(\\*RowBox[{\\\"Exp\\\", \\\"[\\\", RowBox[{RowBox[{\\\"-\\\", \
 \\\"1485.7676530210895`\\\"}], \\\"+\\\", RowBox[{\\\"20300.`\\\", \\\" \\\", \
 \\\"\[ImaginaryI]\\\"}]}], \\\"]\\\"}]\\) is too small to represent as a \
-normalized machine number; precision may be lost.\"", 2, 20, 1, 
-   17557334438033093034, "Local"},
+normalized machine number; precision may be lost.\"", 2, 28, 9, 
+   17557453398689217909, "Local"},
   "MessageTemplate"]], "Message", "MSG",
  CellChangeTimes->{{3.934067712242642*^9, 3.934067803906284*^9}, 
-   3.934077480655444*^9},
+   3.934077480655444*^9, {3.934083984306675*^9, 3.934083991754962*^9}, 
+   3.934094584976976*^9, {3.934095620080238*^9, 3.934095632824339*^9}},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[19]:=",ExpressionUUID->"9e73f097-4733-4544-9e81-\
-8316939ff611"],
+  "\:8a08\:7b97\:4e2d\:ff1aIn[27]:=",ExpressionUUID->"cb16a624-6ece-4169-8f70-\
+07ddf6dd94ea"],
 
 Cell[BoxData[
  TemplateBox[{
   "General", "munfl", 
    "\"\\!\\(\\*RowBox[{\\\"Exp\\\", \\\"[\\\", RowBox[{RowBox[{\\\"-\\\", \
-\\\"1494.2272060017733`\\\"}], \\\"-\\\", RowBox[{\\\"4481.250566432775`\\\", \
-\\\" \\\", \\\"\[ImaginaryI]\\\"}]}], \\\"]\\\"}]\\) is too small to \
-represent as a normalized machine number; precision may be lost.\"", 2, 20, 2,
-    17557334438033093034, "Local"},
+\\\"1521.806052462427`\\\"}], \\\"-\\\", RowBox[{\\\"4.480000000000002`*^15\\\
+\", \\\" \\\", \\\"\[ImaginaryI]\\\"}]}], \\\"]\\\"}]\\) is too small to \
+represent as a normalized machine number; precision may be lost.\"", 2, 28, 
+   10, 17557453398689217909, "Local"},
   "MessageTemplate"]], "Message", "MSG",
  CellChangeTimes->{{3.934067712242642*^9, 3.934067803906284*^9}, 
-   3.9340774806597977`*^9},
+   3.934077480655444*^9, {3.934083984306675*^9, 3.934083991754962*^9}, 
+   3.934094584976976*^9, {3.934095620080238*^9, 3.9340956328299727`*^9}},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[19]:=",ExpressionUUID->"9edee31b-b774-4e1a-b609-\
-48f99716ef58"],
+  "\:8a08\:7b97\:4e2d\:ff1aIn[27]:=",ExpressionUUID->"abbed99b-b3c3-4ea3-8198-\
+407e3b5bad00"],
 
 Cell[BoxData[
  TemplateBox[{
@@ -1499,36 +1507,39 @@ Cell[BoxData[
    "\"\\!\\(\\*RowBox[{\\\"Exp\\\", \\\"[\\\", RowBox[{RowBox[{\\\"-\\\", \
 \\\"1485.7676530210895`\\\"}], \\\"+\\\", RowBox[{\\\"20300.`\\\", \\\" \\\", \
 \\\"\[ImaginaryI]\\\"}]}], \\\"]\\\"}]\\) is too small to represent as a \
-normalized machine number; precision may be lost.\"", 2, 20, 3, 
-   17557334438033093034, "Local"},
+normalized machine number; precision may be lost.\"", 2, 28, 11, 
+   17557453398689217909, "Local"},
   "MessageTemplate"]], "Message", "MSG",
  CellChangeTimes->{{3.934067712242642*^9, 3.934067803906284*^9}, 
-   3.934077480662753*^9},
+   3.934077480655444*^9, {3.934083984306675*^9, 3.934083991754962*^9}, 
+   3.934094584976976*^9, {3.934095620080238*^9, 3.934095632834182*^9}},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[19]:=",ExpressionUUID->"ae7d7746-cb54-4163-b547-\
-b4cc23473183"],
+  "\:8a08\:7b97\:4e2d\:ff1aIn[27]:=",ExpressionUUID->"8e6e9f2d-0a6f-4ae5-a48f-\
+cfe729ce8e36"],
 
 Cell[BoxData[
  TemplateBox[{
   "General", "stop", 
    "\"Further output of \\!\\(\\*StyleBox[RowBox[{\\\"General\\\", \
 \\\"::\\\", \\\"munfl\\\"}], \\\"MessageName\\\"]\\) will be suppressed \
-during this calculation.\"", 2, 20, 4, 17557334438033093034, "Local"},
+during this calculation.\"", 2, 28, 12, 17557453398689217909, "Local"},
   "MessageTemplate"]], "Message", "MSG",
  CellChangeTimes->{{3.934067712242642*^9, 3.934067803906284*^9}, 
-   3.934077480665574*^9},
+   3.934077480655444*^9, {3.934083984306675*^9, 3.934083991754962*^9}, 
+   3.934094584976976*^9, {3.934095620080238*^9, 3.93409563283785*^9}},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[19]:=",ExpressionUUID->"afcd9bee-e6fe-4baf-80c1-\
-ff7837d8017f"],
+  "\:8a08\:7b97\:4e2d\:ff1aIn[27]:=",ExpressionUUID->"7e38c465-a101-44c2-a30a-\
+557ebd0f7dc8"],
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"-", "1.1068434499999806`*^23"}], "-", 
-  RowBox[{"2.7205828574581052`*^22", " ", "\[ImaginaryI]"}]}]], "Output",
+  RowBox[{"-", "6.835227553172995`*^10"}], "+", 
+  RowBox[{"1.7226726097164026`*^17", " ", "\[ImaginaryI]"}]}]], "Output",
  CellChangeTimes->{{3.934032463001951*^9, 3.934032471643792*^9}, 
    3.934032600349017*^9, {3.9340676898397*^9, 3.934067803925395*^9}, 
-   3.934077480668293*^9},
- CellLabel->"Out[20]=",ExpressionUUID->"41dc55e6-2d22-439e-80a9-e12572b31bc7"]
+   3.934077480668293*^9, {3.934083984322987*^9, 3.934083991773038*^9}, 
+   3.9340945849906607`*^9, {3.9340956200957203`*^9, 3.934095632841511*^9}},
+ CellLabel->"Out[28]=",ExpressionUUID->"6d07faf6-ede0-4684-b6e3-5f0414675607"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1555,20 +1566,1205 @@ Cell[BoxData[
  CellChangeTimes->{{3.9340225746808968`*^9, 3.934022574684448*^9}, {
   3.9340233437611637`*^9, 3.934023424915404*^9}, {3.934028866472131*^9, 
   3.93402887243372*^9}, {3.934029237100541*^9, 3.934029251734363*^9}, {
-  3.934029340396775*^9, 3.934029341372751*^9}},
- CellLabel->"In[21]:=",ExpressionUUID->"c34a2172-05ef-4199-8f9c-3c4b1ab40516"],
+  3.934029340396775*^9, 3.934029341372751*^9}, {3.934095703818656*^9, 
+  3.9340957203752403`*^9}},
+ CellLabel->"In[29]:=",ExpressionUUID->"c34a2172-05ef-4199-8f9c-3c4b1ab40516"],
 
-Cell[BoxData["2.5103411013335697`*^-12"], "Output",
+Cell[BoxData["3.7941208760659815`*^-18"], "Output",
  CellChangeTimes->{
   3.934030197240272*^9, 3.934030380900075*^9, {3.934030442197782*^9, 
    3.934030467765155*^9}, {3.9340305600838957`*^9, 3.93403062699984*^9}, 
    3.934030674028605*^9, {3.93403200735606*^9, 3.934032013122653*^9}, 
    3.934032473968169*^9, 3.934032602200027*^9, 3.934067694930005*^9, {
-   3.934067741140198*^9, 3.934067805851712*^9}, 3.934077482658589*^9},
- CellLabel->"Out[22]=",ExpressionUUID->"9a99097a-4147-4305-854c-5ef0e2b659bf"]
+   3.934067741140198*^9, 3.934067805851712*^9}, 3.934077482658589*^9, {
+   3.934083987097944*^9, 3.93408399409448*^9}, 3.934094587943944*^9, {
+   3.9340956219782057`*^9, 3.934095633946435*^9}},
+ CellLabel->"Out[30]=",ExpressionUUID->"45a0354f-a23c-42b3-b2d0-3bb28657b070"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Input", " ", "the", " ", "upper", " ", "boundary", " ", "into", " ", 
+    "the", " ", "integral"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"integralinf", "=", 
+   RowBox[{"integral", "/.", 
+    RowBox[{"r", "->", "Infinity"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.934084011943492*^9, 3.934084064414016*^9}, {
+  3.9340957141009197`*^9, 
+  3.9340957163268433`*^9}},ExpressionUUID->"5ef416e3-5beb-44ff-b99c-\
+d48ebb9fe241"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", 
+   RowBox[{"96", " ", 
+    SuperscriptBox["a", "2"], " ", "R"}]], 
+  RowBox[{"(", 
+   RowBox[{
+    FractionBox[
+     RowBox[{"8", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox[
+            RowBox[{"(", 
+             RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}]], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", "1"}], "+", 
+        RowBox[{"a", " ", "R", " ", "\[Infinity]"}]}], ")"}]}], 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         RowBox[{"a", " ", 
+          SuperscriptBox["R", "2"]}]}], ")"}], "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", "\[Infinity]"}]}], ")"}]}]], "+", 
+    FractionBox[
+     RowBox[{"8", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox["\[ImaginaryI]",
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}]], " ", 
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", "R", " ", "\[Infinity]"}]}], ")"}]}], 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         RowBox[{"a", " ", 
+          SuperscriptBox["R", "2"]}]}], ")"}], "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", "\[Infinity]"}]}], ")"}]}]], "-", 
+    FractionBox[
+     RowBox[{"2", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox[
+            RowBox[{"(", 
+             RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}]], " ", 
+      RowBox[{"(", 
+       RowBox[{"2", "+", 
+        RowBox[{"a", " ", "R", " ", 
+         RowBox[{"(", 
+          RowBox[{"-", "\[Infinity]"}], ")"}]}], "-", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"1", "+", 
+           RowBox[{"a", " ", "\[Infinity]"}]}], ")"}], " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}], "+", 
+           RowBox[{"a", " ", "R", " ", "\[Infinity]"}]}], ")"}]}]}], ")"}]}], 
+     
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], " ", 
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         RowBox[{"a", " ", "\[Infinity]"}]}], ")"}], "2"]}]], "+", 
+    FractionBox[
+     RowBox[{"2", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox["\[ImaginaryI]",
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}]], " ", 
+      RowBox[{"(", 
+       RowBox[{"2", "+", 
+        RowBox[{"a", " ", "R", " ", "\[Infinity]"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"1", "+", 
+           RowBox[{"a", " ", "\[Infinity]"}]}], ")"}], " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}], "+", 
+           RowBox[{"a", " ", "R", " ", "\[Infinity]"}]}], ")"}]}]}], ")"}]}], 
+     
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], " ", 
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         RowBox[{"a", " ", "\[Infinity]"}]}], ")"}], "2"]}]], "-", 
+    FractionBox[
+     RowBox[{"16", " ", "a", " ", 
+      RowBox[{"ExpIntegralEi", "[", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox[
+            RowBox[{"(", 
+             RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}], "]"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "3"]], "+", 
+    FractionBox[
+     RowBox[{"16", " ", "a", " ", 
+      RowBox[{"ExpIntegralEi", "[", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox[
+            RowBox[{"(", 
+             RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}], "]"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", "\[Infinity]"}]}], ")"}], "3"]], "+", 
+    FractionBox[
+     RowBox[{"8", " ", "\[ImaginaryI]", " ", 
+      SuperscriptBox["a", 
+       RowBox[{"3", "/", "2"}]], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "-", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "3"]], "+", 
+    FractionBox[
+     RowBox[{"4", " ", "\[ImaginaryI]", " ", 
+      SuperscriptBox["a", 
+       RowBox[{"3", "/", "2"}]], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "-", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "2"]], "+", 
+    FractionBox[
+     RowBox[{"3", " ", "\[ImaginaryI]", " ", 
+      SuperscriptBox["a", 
+       RowBox[{"3", "/", "2"}]], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "-", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "+", 
+    FractionBox[
+     RowBox[{"4", " ", 
+      SqrtBox["a"], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "-", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "2"]], "+", 
+    FractionBox[
+     RowBox[{
+      SqrtBox["a"], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "-", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "+", 
+    FractionBox[
+     RowBox[{"\[ImaginaryI]", " ", 
+      SqrtBox["a"], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      SuperscriptBox["\[Omega]", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "-", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "+", 
+    FractionBox[
+     RowBox[{"8", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "3"]], "+", 
+    FractionBox[
+     RowBox[{"4", " ", "\[ImaginaryI]", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "2"]], "+", 
+    FractionBox[
+     RowBox[{"3", " ", "\[ImaginaryI]", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "+", 
+    FractionBox[
+     RowBox[{
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      SuperscriptBox["\[Omega]", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox[
+                RowBox[{"(", 
+                 RowBox[{"-", "\[ImaginaryI]"}], ")"}],
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "+", 
+    FractionBox[
+     RowBox[{"16", " ", "a", " ", 
+      RowBox[{"ExpIntegralEi", "[", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox["\[ImaginaryI]",
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}], "]"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "3"]], "-", 
+    FractionBox[
+     RowBox[{"16", " ", "a", " ", 
+      RowBox[{"ExpIntegralEi", "[", 
+       RowBox[{"\[Omega]", " ", 
+        RowBox[{"(", 
+         TagBox[
+          RowBox[{
+           TagBox["\[ImaginaryI]",
+            "DirectedInfinityCoefficient",
+            Editable->True], " ", "\[Infinity]"}],
+          DirectedInfinity,
+          Editable->False], ")"}]}], "]"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", "\[Infinity]"}]}], ")"}], "3"]], "+", 
+    FractionBox[
+     RowBox[{"8", " ", "\[ImaginaryI]", " ", 
+      SuperscriptBox["a", 
+       RowBox[{"3", "/", "2"}]], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{"\[Omega]", " ", 
+           RowBox[{"(", 
+            TagBox[
+             RowBox[{
+              TagBox["\[ImaginaryI]",
+               "DirectedInfinityCoefficient",
+               Editable->True], " ", "\[Infinity]"}],
+             DirectedInfinity,
+             Editable->False], ")"}]}], "]"}]}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "3"]], "+", 
+    FractionBox[
+     RowBox[{"4", " ", "\[ImaginaryI]", " ", 
+      SuperscriptBox["a", 
+       RowBox[{"3", "/", "2"}]], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{"\[Omega]", " ", 
+           RowBox[{"(", 
+            TagBox[
+             RowBox[{
+              TagBox["\[ImaginaryI]",
+               "DirectedInfinityCoefficient",
+               Editable->True], " ", "\[Infinity]"}],
+             DirectedInfinity,
+             Editable->False], ")"}]}], "]"}]}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "2"]], "+", 
+    FractionBox[
+     RowBox[{"3", " ", "\[ImaginaryI]", " ", 
+      SuperscriptBox["a", 
+       RowBox[{"3", "/", "2"}]], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{"\[Omega]", " ", 
+           RowBox[{"(", 
+            TagBox[
+             RowBox[{
+              TagBox["\[ImaginaryI]",
+               "DirectedInfinityCoefficient",
+               Editable->True], " ", "\[Infinity]"}],
+             DirectedInfinity,
+             Editable->False], ")"}]}], "]"}]}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "+", 
+    FractionBox[
+     RowBox[{"4", " ", 
+      SqrtBox["a"], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{"\[Omega]", " ", 
+           RowBox[{"(", 
+            TagBox[
+             RowBox[{
+              TagBox["\[ImaginaryI]",
+               "DirectedInfinityCoefficient",
+               Editable->True], " ", "\[Infinity]"}],
+             DirectedInfinity,
+             Editable->False], ")"}]}], "]"}]}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "2"]], "+", 
+    FractionBox[
+     RowBox[{
+      SqrtBox["a"], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{"\[Omega]", " ", 
+           RowBox[{"(", 
+            TagBox[
+             RowBox[{
+              TagBox["\[ImaginaryI]",
+               "DirectedInfinityCoefficient",
+               Editable->True], " ", "\[Infinity]"}],
+             DirectedInfinity,
+             Editable->False], ")"}]}], "]"}]}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "+", 
+    FractionBox[
+     RowBox[{"\[ImaginaryI]", " ", 
+      SqrtBox["a"], " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", 
+      SuperscriptBox["\[Omega]", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{"\[Omega]", " ", 
+           RowBox[{"(", 
+            TagBox[
+             RowBox[{
+              TagBox["\[ImaginaryI]",
+               "DirectedInfinityCoefficient",
+               Editable->True], " ", "\[Infinity]"}],
+             DirectedInfinity,
+             Editable->False], ")"}]}], "]"}]}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "-", 
+    FractionBox[
+     RowBox[{"8", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox["\[ImaginaryI]",
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "3"]], "-", 
+    FractionBox[
+     RowBox[{"4", " ", "\[ImaginaryI]", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox["\[ImaginaryI]",
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{"a", " ", 
+         SuperscriptBox["R", "2"]}]}], ")"}], "2"]], "-", 
+    FractionBox[
+     RowBox[{"3", " ", "\[ImaginaryI]", " ", "a", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", "R", 
+      " ", "\[Omega]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox["\[ImaginaryI]",
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]], "-", 
+    FractionBox[
+     RowBox[{
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["\[Omega]", 
+          SqrtBox["a"]]}], "+", 
+        RowBox[{"\[ImaginaryI]", " ", "R", " ", "\[Omega]"}]}]], " ", 
+      SuperscriptBox["\[Omega]", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExpIntegralEi", "[", 
+         RowBox[{"\[Omega]", " ", 
+          RowBox[{"(", 
+           TagBox[
+            RowBox[{
+             TagBox["\[ImaginaryI]",
+              "DirectedInfinityCoefficient",
+              Editable->True], " ", "\[Infinity]"}],
+            DirectedInfinity,
+            Editable->False], ")"}]}], "]"}], "+", 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          FractionBox[
+           RowBox[{"2", " ", "\[Omega]"}], 
+           SqrtBox["a"]]], " ", 
+         RowBox[{"ExpIntegralEi", "[", 
+          RowBox[{
+           RowBox[{"-", 
+            FractionBox["\[Omega]", 
+             SqrtBox["a"]]}], "+", 
+           RowBox[{"\[Omega]", " ", 
+            RowBox[{"(", 
+             TagBox[
+              RowBox[{
+               TagBox["\[ImaginaryI]",
+                "DirectedInfinityCoefficient",
+                Editable->True], " ", "\[Infinity]"}],
+              DirectedInfinity,
+              Editable->False], ")"}]}]}], "]"}]}]}], ")"}]}], 
+     RowBox[{"1", "+", 
+      RowBox[{"a", " ", 
+       SuperscriptBox["R", "2"]}]}]]}], ")"}]}]], "Output",
+ CellChangeTimes->{3.934095636744103*^9},
+ CellLabel->"Out[31]=",ExpressionUUID->"f18d0db6-bc7a-446a-b901-5a91f001db2b"]
 }, Open  ]]
 },
-WindowSize->{808, 670},
+WindowSize->{Full, Full},
 WindowMargins->{{98, Automatic}, {Automatic, 0}},
 FrontEndVersion->"14.0 \:95dc\:65bc  Mac OS X ARM (64-bit) \
 (2023\:5e7412\:670812\:65e5)",
@@ -1587,29 +2783,33 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 1418, 37, 143, "Input",ExpressionUUID->"12747e11-3dd2-4f71-aeb7-ff64707adfd4"],
-Cell[2001, 61, 29230, 889, 1901, "Output",ExpressionUUID->"ac6fc19e-02d6-4481-a6dc-0a650b685c39"]
+Cell[580, 22, 1418, 37, 122, "Input",ExpressionUUID->"12747e11-3dd2-4f71-aeb7-ff64707adfd4"],
+Cell[2001, 61, 29323, 891, 972, "Output",ExpressionUUID->"6d0138b5-b629-4820-af1e-2f2369ba209a"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[31268, 955, 365, 7, 30, "Input",ExpressionUUID->"72aa68cf-615d-480a-a2f2-b90d80b26b12"],
-Cell[31636, 964, 12071, 366, 530, "Output",ExpressionUUID->"c0e4344a-babd-4adb-bbd1-f8f6bc0404b8"]
+Cell[31361, 957, 365, 7, 30, "Input",ExpressionUUID->"72aa68cf-615d-480a-a2f2-b90d80b26b12"],
+Cell[31729, 966, 12117, 366, 530, "Output",ExpressionUUID->"ee5731bf-1655-4218-80c2-01d692f6084e"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[43744, 1335, 293, 5, 44, "Input",ExpressionUUID->"d15cfba0-971f-44b0-8425-789738da05b1"],
-Cell[44040, 1342, 378, 5, 34, "Output",ExpressionUUID->"dd15b989-3e61-4c2e-94d7-db31b19f36ff"]
+Cell[43883, 1337, 293, 5, 44, "Input",ExpressionUUID->"d15cfba0-971f-44b0-8425-789738da05b1"],
+Cell[44179, 1344, 446, 6, 34, "Output",ExpressionUUID->"0a412937-5cb8-4f21-be7b-1db1ad63e00f"]
 }, Open  ]],
-Cell[44433, 1350, 2501, 77, 355, "Input",ExpressionUUID->"64204e27-a0e4-4652-b762-6d35c11c6916"],
+Cell[44640, 1353, 2501, 77, 355, "Input",ExpressionUUID->"64204e27-a0e4-4652-b762-6d35c11c6916"],
 Cell[CellGroupData[{
-Cell[46959, 1431, 1530, 32, 94, "Input",ExpressionUUID->"1f9f17f5-c444-4b02-ad5e-23bd2f53736b"],
-Cell[48492, 1465, 623, 13, 28, "Message",ExpressionUUID->"9e73f097-4733-4544-9e81-8316939ff611"],
-Cell[49118, 1480, 636, 13, 28, "Message",ExpressionUUID->"9edee31b-b774-4e1a-b609-48f99716ef58"],
-Cell[49757, 1495, 623, 13, 28, "Message",ExpressionUUID->"ae7d7746-cb54-4163-b547-b4cc23473183"],
-Cell[50383, 1510, 505, 11, 28, "Message",ExpressionUUID->"afcd9bee-e6fe-4baf-80c1-ff7837d8017f"],
-Cell[50891, 1523, 388, 7, 34, "Output",ExpressionUUID->"41dc55e6-2d22-439e-80a9-e12572b31bc7"]
+Cell[47166, 1434, 1644, 35, 94, "Input",ExpressionUUID->"1f9f17f5-c444-4b02-ad5e-23bd2f53736b"],
+Cell[48813, 1471, 741, 14, 28, "Message",ExpressionUUID->"cb16a624-6ece-4169-8f70-07ddf6dd94ea"],
+Cell[49557, 1487, 758, 14, 28, "Message",ExpressionUUID->"abbed99b-b3c3-4ea3-8198-407e3b5bad00"],
+Cell[50318, 1503, 742, 14, 28, "Message",ExpressionUUID->"8e6e9f2d-0a6f-4ae5-a48f-cfe729ce8e36"],
+Cell[51063, 1519, 623, 12, 28, "Message",ExpressionUUID->"7e38c465-a101-44c2-a30a-557ebd0f7dc8"],
+Cell[51689, 1533, 509, 8, 34, "Output",ExpressionUUID->"6d07faf6-ede0-4684-b6e3-5f0414675607"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[51316, 1535, 1033, 23, 122, "Input",ExpressionUUID->"c34a2172-05ef-4199-8f9c-3c4b1ab40516"],
-Cell[52352, 1560, 507, 7, 34, "Output",ExpressionUUID->"9a99097a-4147-4305-854c-5ef0e2b659bf"]
+Cell[52235, 1546, 1084, 24, 122, "Input",ExpressionUUID->"c34a2172-05ef-4199-8f9c-3c4b1ab40516"],
+Cell[53322, 1572, 630, 9, 34, "Output",ExpressionUUID->"45a0354f-a23c-42b3-b2d0-3bb28657b070"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53989, 1586, 481, 12, 65, "Input",ExpressionUUID->"5ef416e3-5beb-44ff-b99c-d48ebb9fe241"],
+Cell[54473, 1600, 38703, 1163, 1021, "Output",ExpressionUUID->"f18d0db6-bc7a-446a-b901-5a91f001db2b"]
 }, Open  ]]
 }
 ]
