@@ -592,10 +592,10 @@ def main():
     
     # Whether to recalculate each integral component
     recalculates = {
-        "phi1": False,
-        "phi2": False,
-        "phi3": False,
-        "r2": False
+        "phi1": True,
+        "phi2": True,
+        "phi3": True,
+        "r2": True
     }
 
     # Calculate B1 values
