@@ -1,4 +1,4 @@
-# Imports   
+# Imports
 from astropy.constants import M_sun
 from astropy import units as u
 from astropy.coordinates import SkyCoord
