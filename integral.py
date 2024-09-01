@@ -69,7 +69,7 @@ def get_f_comp(comp, r, theta, mag_x, omega, a):
         #           / (mag_x**2 + r**2 - 2 * r * mag_x * mp.cos(theta)) 
         #           * mp.sin(theta)**2)
 
-        f_phi3 = (r / mag_x / (1 + a * r**2)**4 
+        f_phi3 = 2 / mp.pi * (r / mag_x / (1 + a * r**2)**4 
                 * (mp.ei(j * omega * (mag_x + r)) - mp.ei(j * omega * (mag_x - r))))
         
         return f_phi3
