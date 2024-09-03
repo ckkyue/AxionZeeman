@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[   1255879,      22094]
-NotebookOptionsPosition[   1249979,      21998]
-NotebookOutlinePosition[   1250396,      22015]
-CellTagsIndexPosition[   1250353,      22012]
+NotebookDataLength[   1256470,      22108]
+NotebookOptionsPosition[   1250471,      22011]
+NotebookOutlinePosition[   1250888,      22028]
+CellTagsIndexPosition[   1250845,      22025]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -4154,7 +4154,20 @@ during this calculation.\"", 2, 84, 25, 17558979732256048687, "Local"},
  CellChangeTimes->{3.934328560838695*^9},
  CellLabel->
   "\:8a08\:7b97\:4e2d\:ff1aIn[83]:=",ExpressionUUID->"ea56335f-da56-4381-8c8c-\
-5f054ae58553"]
+5f054ae58553"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "NIntegrate", "slwcon", 
+   "\"Numerical integration converging too slowly; suspect one of the \
+following: singularity, value of the integration is 0, highly oscillatory \
+integrand, or WorkingPrecision too small.\"", 2, 84, 26, 17558979732256048687,
+    "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.9343289892359324`*^9},
+ CellLabel->
+  "\:8a08\:7b97\:4e2d\:ff1aIn[83]:=",ExpressionUUID->"677be7b6-0b4d-4e78-a628-\
+8e861db487fc"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -22089,12 +22102,13 @@ Cell[154219, 4082, 459, 10, 28, "Message",ExpressionUUID->"857a8ae4-fdd9-4aaf-91
 Cell[154681, 4094, 451, 11, 28, "Message",ExpressionUUID->"79e7f2b3-b25f-4141-b6d0-cc0dcc4be191"],
 Cell[155135, 4107, 458, 10, 28, "Message",ExpressionUUID->"689e7676-5d4c-4d9d-927f-f89e17a475f1"],
 Cell[155596, 4119, 1488, 25, 82, "Message",ExpressionUUID->"20ae4159-70c6-46ba-a6c4-95424191ff66"],
-Cell[157087, 4146, 459, 10, 28, "Message",ExpressionUUID->"ea56335f-da56-4381-8c8c-5f054ae58553"]
+Cell[157087, 4146, 459, 10, 28, "Message",ExpressionUUID->"ea56335f-da56-4381-8c8c-5f054ae58553"],
+Cell[157549, 4158, 489, 11, 28, "Message",ExpressionUUID->"677be7b6-0b4d-4e78-a628-8e861db487fc"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[157583, 4161, 3063, 67, 173, "Input",ExpressionUUID->"e828528f-ac47-4e85-a8c6-972d94d04cd5"],
-Cell[160649, 4230, 1075753, 17525, 246, "Output",ExpressionUUID->"abe4f614-8c4b-4262-86ed-fa7db903bfaa"],
-Cell[1236405, 21757, 13558, 238, 243, "Output",ExpressionUUID->"f8ef18a8-9ce1-4af8-99ea-8abc4fa51ca5"]
+Cell[158075, 4174, 3063, 67, 173, "Input",ExpressionUUID->"e828528f-ac47-4e85-a8c6-972d94d04cd5"],
+Cell[161141, 4243, 1075753, 17525, 246, "Output",ExpressionUUID->"abe4f614-8c4b-4262-86ed-fa7db903bfaa"],
+Cell[1236897, 21770, 13558, 238, 243, "Output",ExpressionUUID->"f8ef18a8-9ce1-4af8-99ea-8abc4fa51ca5"]
 }, Open  ]]
 }
 ]
