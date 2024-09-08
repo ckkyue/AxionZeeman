@@ -2,7 +2,6 @@
 from astropy.constants import M_sun
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from integral import calculate_I_comp
 from matplotlib import colormaps as cm
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
@@ -24,7 +23,7 @@ mu_B = physical_constants["Bohr magneton"][0]
 r_e = physical_constants["Bohr radius"][0]
 
 # Conversion factors
-C_to_eV = (4 * pi * alpha)**(1/2) / e_au
+C_to_eV = (4 * pi * alpha)**(1 / 2) / e_au
 kg_to_eV = c**2 / e_au
 m_to_eVminus1 = e_au / h / c
 J_to_eV = 1 / e_au
@@ -45,7 +44,7 @@ def lower_rspace(string):
     return string.lower().replace(" ", "")
 
 # Calculate the magnitude of magnetic field
-def calculate_B1(potential_type, particle_type, t, params, recalculates, save=True):
+def calculate_B1(potential_type, particle_type, t, params):
     """
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
@@ -59,16 +58,10 @@ def calculate_B1(potential_type, particle_type, t, params, recalculates, save=Tr
         float: Magnitude of the magnetic field.
     """
 
-    # Check whether to recalculate each component of the integral
-    recalculate_phi1 = t == 0 and recalculates.get("phi1")
-    recalculate_phi2 = t == 0 and recalculates.get("phi2")
-    recalculate_phi3 = t == 0 and recalculates.get("phi3")
-    recalculate_r2 = t == 0 and recalculates.get("r2")
-
     # Common parameters of sech and flat potentials
     B_bar = params.get("B_bar")
     angle = params.get("angle")
-    mag_x = params.get("mag_x")
+    mag_z = params.get("mag_z")
     phi0 = params.get("phi0")
     g_ac = params.get("g_ac")
     omega = None
@@ -80,7 +73,7 @@ def calculate_B1(potential_type, particle_type, t, params, recalculates, save=Tr
         R = params.get("R")
 
         # Calculate B1
-        B1 = B_bar / mag_x * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
+        B1 = B_bar / mag_z * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
     
         return B1
 
@@ -96,10 +89,10 @@ def calculate_B1(potential_type, particle_type, t, params, recalculates, save=Tr
             a_a = params.get("a_a")
             omega, a = omega_a, a_a
 
-            # Decompose B_bar into spherical coordinates
-            B_bar_r = B_bar / np.sqrt(3)
-            B_bar_theta = B_bar / np.sqrt(3)
-            B_bar_phi = B_bar / np.sqrt(3)
+            # Decompose B_bar into Cartesian coordinates
+            B_bar_x = B_bar / np.sqrt(3)
+            B_bar_y = B_bar / np.sqrt(3)
+            B_bar_z = B_bar / np.sqrt(3)
 
             # Coefficient for axion
             coeff = omega * g_ac * phi0
@@ -114,43 +107,18 @@ def calculate_B1(potential_type, particle_type, t, params, recalculates, save=Tr
             omega, a = omega_d, a_d
 
             # Pseudo-magnetic field representing the circular polarization vector
-            B_bar_r = 0
-            B_bar_theta = 1 / np.sqrt(2)
-            B_bar_phi = j / np.sqrt(2)
+            B_bar_x = 1 / np.sqrt(2)
+            B_bar_y = j / np.sqrt(2)
+            B_bar_z = 0
 
             # Coefficient for dark photon
             coeff = epsilon * m_d**2 * X_bar
-
-        # Calculate the phi components of the integral
-        I_phi1, error_phi1 = calculate_I_comp("phi1", mag_x, omega, r_c, a, recalculate=recalculate_phi1, save=save)
-        I_phi1_int = - 1 / 2 * I_phi1
-        I_phi2, error_phi2 = calculate_I_comp("phi2", mag_x, omega, r_c, a, recalculate=recalculate_phi2, save=save)
-        I_phi2_int = 1 / 2 * j * omega * I_phi2
-        I_phi3, error_phi3 = calculate_I_comp("phi3", mag_x, omega, r_c, a, recalculate=recalculate_phi3, save=save)
-        I_phi3_int = - 1 / 2 * j * mag_x * omega * I_phi3
-
-        # Calculate the r components of the integral
-        I_r1 = I_phi3
-        I_r1_int = 1 / 2 * j * mag_x * omega * I_r1
-        I_r2, error_r2 = calculate_I_comp("r2", mag_x, omega, r_c, a, recalculate=recalculate_r2, save=save)
-        I_r2_int = 1 / 2 * I_r2
-
-        # Calculate the theta components of the integral
-        I_theta1 = I_phi1
-        I_theta1_int = 1 / 2 * I_theta1
-        I_theta2 = I_phi2
-        I_theta2_int = - 1 / 2 * j * omega * I_theta2
-
-        # Calculate three components of B1
-        B1_r_complex = np.exp(- j * omega * t) * coeff * (B_bar_phi * I_r1_int + B_bar_phi * I_r2_int)
-        B1_theta_complex = np.exp(- j * omega * t) * coeff * (B_bar_phi * I_theta1_int + B_bar_phi * I_theta2_int)
-        B1_phi_complex = np.exp(- j * omega * t) * coeff * (B_bar_theta * I_phi1_int + B_bar_theta * I_phi2_int + B_bar_r * I_phi3_int)
         
         # Calculate B1
-        B1_r = np.real(B1_r_complex)
-        B1_theta = np.real(B1_theta_complex)
-        B1_phi = np.real(B1_phi_complex)
-        B1 = np.sqrt(B1_r**2 + B1_theta**2 + B1_phi**2) * np.cos(angle)
+        B1_x = np.real(B1_x_complex)
+        B1_y = np.real(B1_z_complex)
+        B1_z = np.real(B1_z_complex)
+        B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2) * np.cos(angle)
 
         return B1
 
@@ -481,10 +449,10 @@ def main():
     cart_gctol1544 = cart_l1544 - cart_gc
 
     # Calculate the distance of L1544 from Galactic Centre (pc)
-    mag_x = np.linalg.norm(cart_gctol1544.xyz)
+    mag_z = np.linalg.norm(cart_gctol1544.xyz)
 
     # Calculate the angle between the vector from Galactic Centre to L1544 and the vector to L1544
-    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (mag_x * np.linalg.norm(cart_l1544.xyz)))
+    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (mag_z * np.linalg.norm(cart_l1544.xyz)))
     print(f"The angle between the vector from Galactic Centre to L1544 and the vector to L1544 is {angle:.2e}.")
 
     # Calculate the internal magnetic field
@@ -500,8 +468,8 @@ def main():
     print(f"The magnitude of background magnetic field is {B_bar * T_to_eV2:.2e}eV^2.")
 
     # Calculate distance of L1544 from Galactic Centre (eV^-1)
-    mag_x = mag_x.value * pc_to_m * m_to_eVminus1
-    print(f"The distance of L1544 from Galactic Centre is {mag_x:.2e}eV^-1.")
+    mag_z = mag_z.value * pc_to_m * m_to_eVminus1
+    print(f"The distance of L1544 from Galactic Centre is {mag_z:.2e}eV^-1.")
 
     # Set fiducial parameters
     if potential_type == "sech":
@@ -517,7 +485,7 @@ def main():
         params = {
             "B_bar": B_bar,
             "angle": angle,
-            "mag_x": mag_x,
+            "mag_z": mag_z,
             "phi0": phi0,
             "g_ac": g_ac,
             "omega_a": omega_a,
@@ -559,7 +527,7 @@ def main():
         # Define parameters dictionary
         params = {
             "B_bar": B_bar,
-            "mag_x": mag_x,
+            "mag_z": mag_z,
             "angle": angle,
             "phi0": phi0,
             "X_bar": X_bar,
@@ -589,17 +557,9 @@ def main():
 
     # Define the time range
     ts = np.linspace(0, 4 * period, 1000)
-    
-    # Whether to recalculate each integral component
-    recalculates = {
-        "phi1": False,
-        "phi2": False,
-        "phi3": False,
-        "r2": False
-    }
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, params, recalculates, save=True) for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, params, save=True) for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
