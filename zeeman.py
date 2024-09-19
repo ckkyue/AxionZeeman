@@ -52,7 +52,6 @@ def calculate_B1(potential_type, particle_type, t, params):
         t (float): Time.
         params (dict): Dictionary of parameters.
         recalculates (dict): Dictionary indicating whether to recalculate each integral component.
-        save (bool, optional): Whether to save the calculated integrals. Defaults to True.
 
     Returns:
         float: Magnitude of the magnetic field.
@@ -80,8 +79,10 @@ def calculate_B1(potential_type, particle_type, t, params):
     # flat potential
     elif potential_type == "flat":
         # Common parameters of axion and dark photon
+        cutoff_factor = np.sqrt((2**(1 / 4) - 1) / 0.091)
         a = None
         r_c = params.get("r_c")
+        r_cutoff = cutoff_factor * r_c
 
         # Axion
         if particle_type == "axion":
@@ -114,34 +115,48 @@ def calculate_B1(potential_type, particle_type, t, params):
             # Coefficient for dark photon
             coeff = epsilon * m_d**2 * A0
         
+        # Calculate the integral
+        # Check if the measurement point is greater than the cutoff radius
+        if mag_z > r_cutoff:
+            I = (- 1 + j * mag_z * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (mag_z**2 * omega**3)
+        else:
+            I = (- 1 + j * r_cutoff * omega) * (mag_z * omega * np.cos(mag_z * omega) - np.sin(mag_z * omega)) / (mag_z**2 * omega**3)
+
         # Calculate B1
+        B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
+        B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
+        B1_z_complex = coeff * np.exp(- j * omega * t) * 0
         B1_x = np.real(B1_x_complex)
-        B1_y = np.real(B1_z_complex)
+        B1_y = np.real(B1_y_complex)
         B1_z = np.real(B1_z_complex)
         B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2) * np.cos(angle)
 
         return B1
 
 # Calculate the density profile
-def calculate_rho(rho0, a, r, r_c, approx=False):
+def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, apx=False):
     """
     Args:
         rho0 (float): Energy density at the centre of the soliton.
         a (float): Scaling constant of the density profile.
         r (float): Distance from the centre of the soliton.
         r_c (float): Core radius of the soliton.
-        approx (bool, optional): Whether to use an approximate density profile. Defaults to False.
+        cutoff_factor (float): Used for calculating the cutoff radius.
+        apx (bool, optional): Whether to use an approximate density profile. Defaults to False.
 
     Returns:
         float: Density at the given distance.
     """
+    
+    # Calculate the cutoff radius
+    r_cutoff = cutoff_factor * r_c
 
-    if approx:
-        if r <= r_c:
+    if apx:
+        if r <= r_cutoff:
 
             return rho0
         
-        elif r > r_c:
+        elif r > r_cutoff:
 
             return 0
     else:
@@ -559,7 +574,7 @@ def main():
     ts = np.linspace(0, 4 * period, 1000)
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, params, save=True) for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, params) for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
@@ -603,18 +618,20 @@ def main():
 
         # Calculate the axion density profile
         rhos = [calculate_rho(rho0, a_a, r, r_c) for r in rs]
-        rhos_approx = [calculate_rho(rho0, a_a, r, r_c, approx=True) for r in rs]
+        rhos_rc = [calculate_rho(rho0, a_a, r, r_c, apx=True) for r in rs]
+        rhos_mod = [calculate_rho(rho0, a_a, r, r_c, cutoff_factor=np.sqrt((2**(1 / 4) - 1) / 0.091), apx=True) for r in rs]
         rhos_3d = calculate_rho(rho0, a_a, np.sqrt(xs**2 + ys**2 + zs**2), r_c)
 
         # Calculate axion field strength from density
         phis = [calculate_phi(rho0, m_a) for rho0 in rhos]
-        phis_approx = [calculate_phi(rho0, m_a) for rho0 in rhos_approx]
+        phis_rc = [calculate_phi(rho0, m_a) for rho0 in rhos_rc]
+        phis_mod = [calculate_phi(rho0, m_a) for rho0 in rhos_mod]
 
         # Plot axion density profile
         plot_data(rs_scaled, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
 
         # Plot exact and approximate axion density profiles
-        plot_data(rs_scaled, [rhos, rhos_approx], ["Exact", "Approximate"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhoapprox.png", save=True)
+        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhoapx.png", save=True)
 
         # Plot axion density profile in 3D
         plot3D_data(xs_scaled, ys_scaled, zs_scaled, rhos_3d, r"$x/r_c$", r"$y/r_c$", r"$z/r_c$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile in 3D", "axionrho3d.png", save=True)
@@ -623,7 +640,7 @@ def main():
         plot_data(rs_scaled, phis, None, r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphim{m_a}.png", save=True)
 
         # Plot exact and approximate axion field strengths
-        plot_data(rs_scaled, [phis, phis_approx], ["Exact", "Approximate"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphiapproxm{m_a}.png", save=True)
+        plot_data(rs_scaled, [phis, phis_rc, phis_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $1.44r_c$"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphiapx{m_a}.png", save=True)
 
 # Run the main program
 if __name__ == "__main__":
