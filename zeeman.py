@@ -99,7 +99,7 @@ def calculate_B1(potential_type, particle_type, t, params):
 
         # Dark photon
         elif particle_type == "dark photon":
-            X_bar = params.get("X_bar")
+            A0 = params.get("A0")
             epsilon = params.get("epsilon")
             m_d = params.get("m_d")
             omega_d = params.get("omega_d")
@@ -112,7 +112,7 @@ def calculate_B1(potential_type, particle_type, t, params):
             B_bar_z = 0
 
             # Coefficient for dark photon
-            coeff = epsilon * m_d**2 * X_bar
+            coeff = epsilon * m_d**2 * A0
         
         # Calculate B1
         B1_x = np.real(B1_x_complex)
@@ -513,7 +513,7 @@ def main():
 
         # Calculate amplitudes
         phi0 = (2 * rho0)**0.5 / m_a # Amplitude of axion potential (eV)
-        X_bar = phi0 # Amplitude of dark photon potential (eV)
+        A0 = phi0 # Amplitude of dark photon potential (eV)
 
         # Coupling constants and frequencies
         g_ac = alpha / np.pi / f # Coupling constant (eV^-1)
@@ -530,7 +530,7 @@ def main():
             "mag_z": mag_z,
             "angle": angle,
             "phi0": phi0,
-            "X_bar": X_bar,
+            "A0": A0,
             "g_ac": g_ac,
             "epsilon": epsilon,
             "omega_a": omega_a,

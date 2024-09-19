@@ -26,7 +26,7 @@ B_bar_x, B_bar_y, B_bar_z, R, a, omega, mag_z, t, g_ac, phi0 = sp.symbols("B_bar
 # Main function
 def main():
     # Define scalar function
-    f = (1 + a * (x**2 + y**2 + z**2))**(-4) * sp.exp(sp.I * omega * sp.sqrt(x**2 + y**2 + (z - R)**2))
+    f = (1 + a * (x**2 + y**2 + z**2))**(-4)
 
     # Define the vector field in Cartesian coordinates
     Bbar = B_bar_x * x_hat + B_bar_y * y_hat + B_bar_z * z_hat
