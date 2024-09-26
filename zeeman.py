@@ -60,7 +60,7 @@ def calculate_B1(potential_type, particle_type, t, params):
     # Common parameters of sech and flat potentials
     B_bar = params.get("B_bar")
     angle = params.get("angle")
-    mag_z = params.get("mag_z")
+    r_p = params.get("r_p")
     phi0 = params.get("phi0")
     g_ac = params.get("g_ac")
     omega = None
@@ -72,7 +72,7 @@ def calculate_B1(potential_type, particle_type, t, params):
         R = params.get("R")
 
         # Calculate B1
-        B1 = B_bar / mag_z * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
+        B1 = B_bar / r_p * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
     
         return B1
 
@@ -117,10 +117,10 @@ def calculate_B1(potential_type, particle_type, t, params):
         
         # Calculate the integral
         # Check if the measurement point is greater than the cutoff radius
-        if mag_z > r_cutoff:
-            I = (- 1 + j * mag_z * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (mag_z**2 * omega**3)
+        if r_p > r_cutoff:
+            I = (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3)
         else:
-            I = (- 1 + j * r_cutoff * omega) * (mag_z * omega * np.cos(mag_z * omega) - np.sin(mag_z * omega)) / (mag_z**2 * omega**3)
+            I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
 
         # Calculate B1
         B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
@@ -464,10 +464,10 @@ def main():
     cart_gctol1544 = cart_l1544 - cart_gc
 
     # Calculate the distance of L1544 from Galactic Centre (pc)
-    mag_z = np.linalg.norm(cart_gctol1544.xyz)
+    r_p = np.linalg.norm(cart_gctol1544.xyz)
 
     # Calculate the angle between the vector from Galactic Centre to L1544 and the vector to L1544
-    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (mag_z * np.linalg.norm(cart_l1544.xyz)))
+    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (r_p * np.linalg.norm(cart_l1544.xyz)))
     print(f"The angle between the vector from Galactic Centre to L1544 and the vector to L1544 is {angle:.2e}.")
 
     # Calculate the internal magnetic field
@@ -483,8 +483,8 @@ def main():
     print(f"The magnitude of background magnetic field is {B_bar * T_to_eV2:.2e}eV^2.")
 
     # Calculate distance of L1544 from Galactic Centre (eV^-1)
-    mag_z = mag_z.value * pc_to_m * m_to_eVminus1
-    print(f"The distance of L1544 from Galactic Centre is {mag_z:.2e}eV^-1.")
+    r_p = r_p.value * pc_to_m * m_to_eVminus1
+    print(f"The distance of L1544 from Galactic Centre is {r_p:.2e}eV^-1.")
 
     # Set fiducial parameters
     if potential_type == "sech":
@@ -500,7 +500,7 @@ def main():
         params = {
             "B_bar": B_bar,
             "angle": angle,
-            "mag_z": mag_z,
+            "r_p": r_p,
             "phi0": phi0,
             "g_ac": g_ac,
             "omega_a": omega_a,
@@ -542,7 +542,7 @@ def main():
         # Define parameters dictionary
         params = {
             "B_bar": B_bar,
-            "mag_z": mag_z,
+            "r_p": r_p,
             "angle": angle,
             "phi0": phi0,
             "A0": A0,
