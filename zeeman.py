@@ -87,7 +87,7 @@ def calculate_B1(potential_type, particle_type, t, params):
             omega_a = params.get("omega_a")
             a_a = params.get("a_a")
             omega, a = omega_a, a_a
-            B_bar_x, B_bar_y, B_bar_z = B_bar / np.sqrt(3), B_bar / np.sqrt(3), B_bar / np.sqrt(3) # Decompose B_bar into Cartesian coordinates
+            B_bar_x, B_bar_y, B_bar_z = 0, B_bar, 0 # Decompose B_bar into Cartesian coordinates
             coeff = omega * g_ac * phi0 # Coefficient for axion
 
         # Dark photon
@@ -110,7 +110,7 @@ def calculate_B1(potential_type, particle_type, t, params):
         # Calculate B1 components
         B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
         B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
-        B1_z_complex = coeff * np.exp(- j * omega * t) * 0
+        B1_z_complex = 0 # No contribution in the z direction
 
         # Compute magnitudes
         B1_x = np.real(B1_x_complex)
