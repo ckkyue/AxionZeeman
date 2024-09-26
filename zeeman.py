@@ -51,7 +51,6 @@ def calculate_B1(potential_type, particle_type, t, params):
         particle_type (str): Type of particle ("axion" or "dark photon").
         t (float): Time.
         params (dict): Dictionary of parameters.
-        recalculates (dict): Dictionary indicating whether to recalculate each integral component.
 
     Returns:
         float: Magnitude of the magnetic field.
@@ -59,7 +58,6 @@ def calculate_B1(potential_type, particle_type, t, params):
 
     # Common parameters of sech and flat potentials
     B_bar = params.get("B_bar")
-    angle = params.get("angle")
     r_p = params.get("r_p")
     phi0 = params.get("phi0")
     g_ac = params.get("g_ac")
@@ -84,19 +82,13 @@ def calculate_B1(potential_type, particle_type, t, params):
         r_c = params.get("r_c")
         r_cutoff = cutoff_factor * r_c
 
-        # Axion
+        # Set parameters based on the particle type
         if particle_type == "axion":
             omega_a = params.get("omega_a")
             a_a = params.get("a_a")
             omega, a = omega_a, a_a
-
-            # Decompose B_bar into Cartesian coordinates
-            B_bar_x = B_bar / np.sqrt(3)
-            B_bar_y = B_bar / np.sqrt(3)
-            B_bar_z = B_bar / np.sqrt(3)
-
-            # Coefficient for axion
-            coeff = omega * g_ac * phi0
+            B_bar_x, B_bar_y, B_bar_z = B_bar / np.sqrt(3), B_bar / np.sqrt(3), B_bar / np.sqrt(3) # Decompose B_bar into Cartesian coordinates
+            coeff = omega * g_ac * phi0 # Coefficient for axion
 
         # Dark photon
         elif particle_type == "dark photon":
@@ -106,26 +98,21 @@ def calculate_B1(potential_type, particle_type, t, params):
             omega_d = params.get("omega_d")
             a_d = params.get("a_d")
             omega, a = omega_d, a_d
-
-            # Pseudo-magnetic field representing the circular polarization vector
-            B_bar_x = 1 / np.sqrt(2)
-            B_bar_y = j / np.sqrt(2)
-            B_bar_z = 0
-
-            # Coefficient for dark photon
-            coeff = epsilon * m_d**2 * A0
+            B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field representing the circular polarization vector
+            coeff = epsilon * m_d**2 * A0 # Coefficient for dark photon
         
-        # Calculate the integral
-        # Check if the measurement point is greater than the cutoff radius
+        # Calculate the integral based on the cutoff radius
         if r_p > r_cutoff:
             I = (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3)
         else:
             I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
 
-        # Calculate B1
+        # Calculate B1 components
         B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
         B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
         B1_z_complex = coeff * np.exp(- j * omega * t) * 0
+
+        # Compute magnitudes
         B1_x = np.real(B1_x_complex)
         B1_y = np.real(B1_y_complex)
         B1_z = np.real(B1_z_complex)
@@ -499,7 +486,6 @@ def main():
         # Define parameters dictionary
         params = {
             "B_bar": B_bar,
-            "angle": angle,
             "r_p": r_p,
             "phi0": phi0,
             "g_ac": g_ac,
@@ -543,7 +529,6 @@ def main():
         params = {
             "B_bar": B_bar,
             "r_p": r_p,
-            "angle": angle,
             "phi0": phi0,
             "A0": A0,
             "g_ac": g_ac,
@@ -631,7 +616,7 @@ def main():
         plot_data(rs_scaled, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
 
         # Plot exact and approximate axion density profiles
-        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhoapx.png", save=True)
+        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhoapx.png", save=True)
 
         # Plot axion density profile in 3D
         plot3D_data(xs_scaled, ys_scaled, zs_scaled, rhos_3d, r"$x/r_c$", r"$y/r_c$", r"$z/r_c$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile in 3D", "axionrho3d.png", save=True)
@@ -640,7 +625,7 @@ def main():
         plot_data(rs_scaled, phis, None, r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphim{m_a}.png", save=True)
 
         # Plot exact and approximate axion field strengths
-        plot_data(rs_scaled, [phis, phis_rc, phis_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $1.44r_c$"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphiapx{m_a}.png", save=True)
+        plot_data(rs_scaled, [phis, phis_rc, phis_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphiapx{m_a}.png", save=True)
 
 # Run the main program
 if __name__ == "__main__":
