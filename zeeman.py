@@ -129,7 +129,7 @@ def calculate_B1(potential_type, particle_type, t, params):
         B1_x = np.real(B1_x_complex)
         B1_y = np.real(B1_y_complex)
         B1_z = np.real(B1_z_complex)
-        B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2) * np.cos(angle)
+        B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
 
         return B1
 
