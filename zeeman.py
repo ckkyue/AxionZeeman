@@ -5,6 +5,7 @@ from astropy.coordinates import SkyCoord
 from matplotlib import colormaps as cm
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import os
 from scipy.constants import alpha, epsilon_0, h, hbar, G, m_e, m_p, pi, physical_constants, year
@@ -434,6 +435,18 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
     # Show the plot
     plt.show()
 
+# Format ticks for logarithmic plots
+def log_tick_formatter(value, position=None):
+    """
+    Args:
+        value (float): The tick value to format, representing the exponent in a logarithmic scale.
+        position (int, optional): The tick position.
+
+    Returns:
+        str: A formatted string representing the tick value as a power of 10, e.g., "$10^{2}$" for a value of 2.
+    """
+    return f"$10^{{{int(value)}}}$"
+
 # Plot the 2D data
 def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, xlog=False, ylog=False, zlog=False, save=False):
     """
@@ -459,22 +472,30 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, xlog=Fal
     # Surface plot
     surf = ax.plot_surface(xs, ys, zs, cmap="viridis", edgecolor="none")
 
-    # Set the axes to logarithmic scale if necessary
+    # Set major tick formatter and locator for the axes
     if xlog:
-        ax.set_xscale("log")
+        ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
     if ylog:
-        ax.set_yscale("log")
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
     if zlog:
-        ax.set_zscale("log")
+        ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+        ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
-    # Labels and title
+    # Set the axes labels and title
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
     ax.set_title(title)
 
-    # Show coloru bar
-    fig.colorbar(surf, shrink=0.75)
+    # Show colour bar
+    cbar = fig.colorbar(surf, shrink=0.75)
+    
+    # Set tick formatter for the colour bar
+    if zlog: # Assuming z-values are represented in the colour bar
+        cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+        cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
     # Adjust the spacing
     plt.tight_layout()
@@ -494,17 +515,17 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
         xs (array): x-coordinates of the data points.
         ys (array): y-coordinates of the data points.
         zs (array): z-coordinates of the data points.
-        ws (array): Values for color-coding.
+        ws (array): Values for colour-coding.
         xlabel (str): Label for the x-axis.
         ylabel (str): Label for the y-axis.
         zlabel (str): Label for the z-axis.
-        wlabel (str): Label for the colorbar.
+        wlabel (str): Label for the colour bar.
         title (str): Title of the plot.
         figure_name (str): Name of the file to save the plot (if save is True).
         xlog (bool, optional): Set the x-axis to logarithmic scale. Defaults to False.
         ylog (bool, optional): Set the y-axis to logarithmic scale. Defaults to False.
         zlog (bool, optional): Set the z-axis to logarithmic scale. Defaults to False.
-        cmap_name (str, optional): Name of the colormap to use. Defaults to "plasma".
+        cmap_name (str, optional): Name of the colour map to use. Defaults to "plasma".
         alpha (float, optional): Transparency of the markers. Defaults to 0.7.
         s (int, optional): Size of the markers. Defaults to 20.
         save (bool, optional): Whether to save the plot. Defaults to False.
@@ -514,31 +535,32 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection="3d")
 
-    # Get the colormap
+    # Get the colour map
     cmap = cm.get_cmap(cmap_name)
 
     # Create a scatter plot with adjustments
     scatter = ax.scatter(xs, ys, zs, c=ws, cmap=cmap, alpha=alpha, s=s)
 
-    # Add a colorbar to the plot
+    # Add a colour bar to the plot
     cbar = plt.colorbar(scatter, shrink=0.75)
     cbar.set_label(wlabel)
 
-    # Set the axes labels
+    # Set the axes labels and title
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
+    ax.set_title(title)
 
-    # Set the axes to logarithmic scale if necessary
+    # Set major tick formatter and locator for the axes
     if xlog:
-        ax.set_xscale("log")
+        ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
     if ylog:
-        ax.set_yscale("log")
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
     if zlog:
-        ax.set_zscale("log")
-    
-    # Set the title
-    plt.title(title)
+        ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+        ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
     # Adjust the spacing
     plt.tight_layout()
@@ -638,8 +660,8 @@ def main():
     B1params_d = calculate_B1("flat", "dark photon", 0, m_ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
 
     # Plot B1 versus the parameter space
-    plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$\log_{10}m_a$ (eV)", r"$\log_{10}f_a$ (eV)", r"$\log_{10}|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", save=True)
-    plot2D_data(np.log10(m_ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$\log_{10}m_d$ (eV)", r"$\log_{10}\varepsilon$", r"$\log_{10}|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", save=True)
+    plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
+    plot2D_data(np.log10(m_ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_d$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
