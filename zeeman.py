@@ -521,7 +521,7 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
     scatter = ax.scatter(xs, ys, zs, c=ws, cmap=cmap, alpha=alpha, s=s)
 
     # Add a colorbar to the plot
-    cbar = plt.colorbar(scatter)
+    cbar = plt.colorbar(scatter, shrink=0.75)
     cbar.set_label(wlabel)
 
     # Set the axes labels
