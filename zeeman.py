@@ -556,14 +556,14 @@ def main():
     # Set parameters based on potential type
     if potential_type == "sech":
         f, m_a = gen_params(potential_type)
-        g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
-        epsilon = 1e-3 # Photon-dark photon coupling strength, 1e-5 to 1e-3
-
     elif potential_type == "flat":
         f, m_a, m_d = gen_params(potential_type)
-        g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
-        epsilon = 1e-3 # Photon-dark photon coupling strength, 1e-5 to 1e-3
 
+    # Coupling strength
+    g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
+    epsilon = 1e-3 # Photon-dark photon coupling strength, 1e-5 to 1e-3
+
+    if particle_type == "dark photon":
         # Print the proportionality constant between dark photon and axion
         print(f"Proportionality constant between dark photon and axion: {epsilon * m_d / (g_ac * B_bar):.2e}.")
 
@@ -576,10 +576,10 @@ def main():
     # Parameter space
     m_as = np.logspace(-22, -18, 100)
     m_ds = np.logspace(-22, -18, 100)
-    f_as = np.logspace(23, 27, 100)
+    fs = np.logspace(23, 27, 100)
     epsilons = np.logspace(-5, -3, 100)
-    m_as, f_as = np.meshgrid(m_as, f_as)
-    B1params_a = calculate_B1("flat", "axion", 0, m_as, f_as, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+    m_as, fs = np.meshgrid(m_as, fs)
+    B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
