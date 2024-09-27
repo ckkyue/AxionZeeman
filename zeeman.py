@@ -80,20 +80,16 @@ def gen_params(potential_type):
 
     if potential_type == "sech":
         f = 1e19 # Energy scale of axion (eV)
-        m_a = 1e-5 # Axion mass, 1e-18 to 1e-22 (eV)
-        omega_a = m_a # Oscillation frequency of axion (eV)
+        m_a = 1e-5 # Axion mass (eV)
 
-        return f, m_a, omega_a
+        return f, m_a
 
     elif potential_type == "flat":
         f = 1e26 # Energy scale of axion (eV)
         m_a = 1e-22 # Axion mass, 1e-18 to 1e-22 (eV)
         m_d = 1e-22 # Dark photon mass, 1e-18 to 1e-22 (eV)
-        mu = 0 # Chemical potential of dark photon (eV)
-        omega_a = m_a # Oscillation frequency of axion (eV)
-        omega_d = m_d - mu # Oscillation frequency of dark photon (eV)
 
-        return f, m_a, m_d, mu, omega_a, omega_d
+        return f, m_a, m_d
 
 # Calculate the energy density at the centre of the soliton
 def calculate_rho0(m):
@@ -170,17 +166,18 @@ def calculate_gac(potential_type, f):
     return g_ac
 
 # Calculate the magnitude of magnetic field
-def calculate_B1(potential_type, particle_type, t, m, omega, f, epsilon, r_p, B_bar, real=True):
+def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, real=True):
     """
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
         particle_type (str): Type of particle ("axion" or "dark photon").
         t (float): Time.
         m (float): Particle mass.
-        omega (float): Oscillation frequency.
         f (float): Energy scale of axion.
         epsilon (float): Photon-dark photon coupling strength
-        real (bool, optional): Whether to take the real parts of magnetic field components. Defaults to True.
+        r_p (float): Distance of measurement point from Galactic Centre
+        B_bar (float): Magnitude of the background magnetic field 
+        real (bool, optional): Whether to take the real parts of the magnetic field components. Defaults to True.
 
     Returns:
         float: Magnitude of the magnetic field.
@@ -188,8 +185,8 @@ def calculate_B1(potential_type, particle_type, t, m, omega, f, epsilon, r_p, B_
 
     # sech potential
     if potential_type == "sech":
-        g_ac = calculate_gac(potential_type, f)
-        phi0 = 3 * f # Amplitude of axion potential (eV)
+        g_ac = calculate_gac(potential_type, f) # Calculate the axion-photon coupling strength
+        phi0 = 3 * f # Calculate the axion field strength (eV)
         omega = 0.8 * m # Oscillation frequency (eV)
         R = 2 / m # Radius of axion star (eV^-1)
 
@@ -207,17 +204,20 @@ def calculate_B1(potential_type, particle_type, t, m, omega, f, epsilon, r_p, B_
         # Calculate the energy density at the centre of the soliton
         rho0 = calculate_rho0(m)
 
-        # Calculate the amplitude of fields
+        # Calculate the axion field strength
         phi0 = calculate_phi(rho0, m)
-        A0 = phi0
+        A0 = phi0 # Dark photon field strength
 
         # Set parameters based on the particle type
         if particle_type == "axion":
-            g_ac = calculate_gac(potential_type, f)
-            B_bar_x, B_bar_y, B_bar_z = 0, B_bar, 0 # Decompose B_bar into Cartesian coordinates
+            g_ac = calculate_gac(potential_type, f) # Calculate the axion-photon coupling strength
+            omega = m
+            B_bar_x, B_bar_y, B_bar_z = 0, B_bar, 0 # Decompose B_bar into Cartesian components
             coeff = omega * g_ac * phi0 # Coefficient for axion
 
         elif particle_type == "dark photon":
+            mu = 0 # Chemical potential
+            omega = m - mu
             B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field representing the circular polarization vector
             coeff = epsilon * m**2 * A0 # Coefficient for dark photon
         
@@ -232,7 +232,7 @@ def calculate_B1(potential_type, particle_type, t, m, omega, f, epsilon, r_p, B_
         B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
         B1_z_complex = 0 # No contribution in the z direction
 
-        # Compute magnitudes
+        # Compute magnitudes of B1 components
         if real:
             B1_x = np.real(B1_x_complex)
             B1_y = np.real(B1_y_complex)
@@ -306,12 +306,17 @@ def calculate_E_hf(state):
 
     if state == "triplet":
         factor = 1 / 4
+
     elif state == "singlet":
         factor = - 3 / 4
+
     else:
         print("Invalid state")
+
         return None
+    
     E_hf = 4 * g_p * hbar**4 / (3 * m_p * m_e**2 * c**2 * r_e**4) * factor
+
     return E_hf
 
 # Calculate the frequency of light
@@ -325,6 +330,7 @@ def calculate_nu(E):
     """
 
     nu = E / h
+
     return nu
 
 # Calculate the shift in energy
@@ -377,11 +383,6 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
             if plotlabel:
                 ax.legend()
 
-        if xlog:
-            plt.xscale("log")
-        if ylog:
-            plt.yscale("log")
-
         # Set the x label
         plt.xlabel(xlabel)
 
@@ -404,12 +405,7 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
         # Set the x limit
         plt.xlim(np.min(xs), np.max(xs))
 
-        if xlog:
-            plt.xscale("log")
-        if ylog:
-            plt.yscale("log")
-
-        # Set the labels
+        # Set the axes labels
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
 
@@ -419,6 +415,12 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
         # Add the legend if label is provided
         if plotlabel:
             plt.legend()
+
+    # Set the axes to logarithmic scale if necessary
+    if xlog:
+        plt.xscale("log")
+    if ylog:
+        plt.yscale("log")
 
     # Adjust the spacing between subplots
     plt.tight_layout()
@@ -431,36 +433,8 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
     # Show the plot
     plt.show()
 
-# Generate meshgrid
-def gen_meshgrid(x_range, y_range, z_range, num_points):
-    """
-    Args:
-        x_range (tuple): The range of values for the x-axis.
-        y_range (tuple): The range of values for the y-axis.
-        z_range (tuple): The range of values for the z-axis.
-        num_points (int): The number of points to generate along each axis.
-
-    Returns:
-        tuple: Three arrays representing the x, y, and z coordinates of the meshgrid points.
-    """
-
-    # Generate evenly spaced data points along each axis
-    xs = np.linspace(x_range[0], x_range[1], num_points)
-    ys = np.linspace(y_range[0], y_range[1], num_points)
-    zs = np.linspace(z_range[0], z_range[1], num_points)
-
-    # Create a meshgrid for 3D plotting
-    X, Y, Z = np.meshgrid(xs, ys, zs)
-
-    # Flatten the meshgrid for scatter plotting
-    xs = X.flatten()
-    ys = Y.flatten()
-    zs = Z.flatten()
-
-    return xs, ys, zs
-
 # Plots the 3D data
-def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_name, cmap_name="plasma_r", alpha=0.7, s=20, save=False):
+def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_name, xlog=False, ylog=False, zlog=False, cmap_name="plasma_r", alpha=0.7, s=20, save=False):
     """
     Args:
         xs (array): x-coordinates of the data points.
@@ -473,6 +447,9 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
         wlabel (str): Label for the colorbar.
         title (str): Title of the plot.
         figure_name (str): Name of the file to save the plot (if save is True).
+        xlog (bool, optional): Set the x-axis to logarithmic scale. Defaults to False.
+        ylog (bool, optional): Set the y-axis to logarithmic scale. Defaults to False.
+        zlog (bool, optional): Set the z-axis to logarithmic scale. Defaults to False.
         cmap_name (str, optional): Name of the colormap to use. Defaults to "plasma".
         alpha (float, optional): Transparency of the markers. Defaults to 0.7.
         s (int, optional): Size of the markers. Defaults to 20.
@@ -493,11 +470,19 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
     cbar = plt.colorbar(scatter)
     cbar.set_label(wlabel)
 
-    # Set axis labels
+    # Set the axes labels
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
 
+    # Set the axes to logarithmic scale if necessary
+    if xlog:
+        ax.set_xscale("log")
+    if ylog:
+        ax.set_yscale("log")
+    if zlog:
+        ax.set_zscale("log")
+    
     # Set the title
     plt.title(title)
 
@@ -512,6 +497,29 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
     # Show the plot
     plt.show()
 
+# Generate meshgrid
+def gen_meshgrid(ranges, num_points, log=False):
+    """
+    Args:
+        ranges (list of tuples): A list of tuples, where each tuple defines the range for that dimension.
+        num_points (int): The number of points to generate along each axis.
+        log (bool, optional): Use logspace instead. Defaults to False.
+
+    Returns:
+        tuple: A list of arrays representing the coordinates of the meshgrid points in each dimension.
+    """
+    
+    # Generate evenly spaced data points along each axis
+    if log:
+        grids = [np.logspace(range[0], range[1], num_points) for range in ranges]
+    else:
+        grids = [np.linspace(range[0], range[1], num_points) for range in ranges]
+    
+    # Create a meshgrid for n-dimensional plotting
+    meshgrid = np.meshgrid(*grids, indexing="ij")
+    
+    return meshgrid
+
 # Main program
 def main():
     # Define the paths for the folders
@@ -523,14 +531,14 @@ def main():
             os.makedirs(folder)
 
     # Calculate the distance of L1544 from Galactic Centre (pc)
-    r_p = np.linalg.norm(cart_gctol1544.xyz)
+    r_p_pc = np.linalg.norm(cart_gctol1544.xyz)
 
     # Calculate the angle between the vector from Galactic Centre to L1544 and the vector to L1544
-    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (r_p * np.linalg.norm(cart_l1544.xyz)))
+    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (r_p_pc * np.linalg.norm(cart_l1544.xyz)))
     print(f"The angle between the vector from Galactic Centre to L1544 and the vector to L1544 is {angle:.2e}.")
 
     # Calculate distance of L1544 from Galactic Centre (eV^-1)
-    r_p = r_p.value * pc_to_m * m_to_eVminus1
+    r_p = r_p_pc.value * pc_to_m * m_to_eVminus1
     print(f"The distance of L1544 from Galactic Centre is {r_p:.2e}eV^-1.")
 
     # Calculate the internal magnetic field of a hydrogen atom
@@ -538,7 +546,7 @@ def main():
     print(f"The magnitude of internal magnetic field is roughly {B_int:.2f}T.")
 
     # Specify the potential and particle types
-    potential_type = "sech" # sech or flat
+    potential_type = "flat" # sech or flat
     particle_type = "axion" # axion or dark photon
 
     # Background magnetic field (T)
@@ -547,12 +555,12 @@ def main():
 
     # Set parameters based on potential type
     if potential_type == "sech":
-        f, m_a, omega_a = gen_params(potential_type)
+        f, m_a = gen_params(potential_type)
         g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
         epsilon = 1e-3 # Photon-dark photon coupling strength, 1e-5 to 1e-3
 
     elif potential_type == "flat":
-        f, m_a, m_d, mu, omega_a, omega_d = gen_params(potential_type)
+        f, m_a, m_d = gen_params(potential_type)
         g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
         epsilon = 1e-3 # Photon-dark photon coupling strength, 1e-5 to 1e-3
 
@@ -561,19 +569,28 @@ def main():
 
     # Set mass and oscillation frequency based on particle type
     if particle_type == "axion":
-        m, omega = m_a, omega_a
+        m, omega = m_a, m_a
     elif particle_type == "dark photon":
-        m, omega = m_d, omega_d
+        m, omega = m_d, m_d
+
+    # Parameter space
+    m_as = np.linspace(1e-22, 1e-18, 100)
+    m_ds = np.linspace(1e-22, 1e-18, 100)
+    f_as = np.linspace(1e23, 1e27, 100)
+    epsilons = np.linspace(1e-5, 1e-3,100)
+    m_as, f_as = np.meshgrid(m_as, f_as)
+    B1params_a = calculate_B1("flat", "axion", 0, m_as, f_as, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+    B1params_d = calculate_B1("flat", "dark photon", 0, m_ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
 
     # Calculate the period of oscillation
-    period = period = 2 * np.pi / omega / s_to_eVminus1
+    period = 2 * np.pi / omega / s_to_eVminus1
     print(f"Period: {round(period / year, 2)}yr.")
 
     # Define the time range
     ts = np.linspace(0, 4 * period, 1000)
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, omega, f, epsilon, r_p, B_bar) for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, B_bar) for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
@@ -601,15 +618,24 @@ def main():
 
     # Plot B1 versus distance of measurement point from Galactic Centre (r_p)
     r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
-    f, m_a, m_d, mu, omega_a, omega_d = gen_params("flat")
-    B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, omega_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
-    B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_d, omega_d, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
+    r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
+    f, m_a, m_d = gen_params("flat")
+    B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
+    B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_d, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
+    B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
+    B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_d, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
 
     # Plot B1 versus r_p for axion
-    plot_data(r_ps / r_c, B1r_ps_a / 1e-4, "", r"$\log_{10}(r_p/r_c)$", r"$|\vec{B}_{1, a}|$ (G)", r"$|\vec{B}_{1, a}|$ versus $r_p/r_c$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
+    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$\log_{10}(r_p/\mathrm{kpc})$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
+    
+    # Restrict the radial range for plotting
+    plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}res.png", save=True)
     
     # Plot B1 versus r_p for dark photon
-    plot_data(r_ps / r_c, B1r_ps_d / 1e-4, "", r"$\log_{10}(r_p/r_c)$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"$|\vec{B}_{1, \vec{A}'}|$ versus $r_p/r_c$", f"B1vsrpflatdarkphotonm{m_d}.png", xlog=True, save=True)
+    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / 1e-4, "", r"$\log_{10}(r_p/\mathrm{kpc})$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_d}.png", xlog=True, save=True)
+    
+    # Restrict the radial range for plotting
+    plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_d}res.png", save=True)
     
     # Plot the soliton profile for flat potential and axion
     if potential_type == "flat" and particle_type == "axion":
@@ -623,7 +649,7 @@ def main():
         z_range = (- 2 * r_c, 2 * r_c)
 
         # Generate the meshgrid
-        xs, ys, zs = gen_meshgrid(x_range, y_range, z_range, 15)
+        xs, ys, zs = [g.flatten() for g in gen_meshgrid([x_range, y_range, z_range], 15)]
         xs_scaled = xs / r_c
         ys_scaled = ys / r_c
         zs_scaled = zs / r_c
@@ -644,7 +670,7 @@ def main():
         plot_data(rs_scaled, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
 
         # Plot exact and approximate axion density profiles
-        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhostep.png", save=True)
+        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", "axionrhostep.png", save=True)
 
         # Plot axion density profile in 3D
         plot3D_data(xs_scaled, ys_scaled, zs_scaled, rhos_3d, r"$x/r_c$", r"$y/r_c$", r"$z/r_c$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile in 3D", "axionrho3d.png", save=True)
