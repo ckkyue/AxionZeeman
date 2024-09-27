@@ -88,9 +88,9 @@ def gen_params(potential_type):
     elif potential_type == "flat":
         f = 1e26 # Energy scale of axion (eV)
         m_a = 1e-22 # Axion mass, 1e-18 to 1e-22 (eV)
-        m_d = 1e-22 # Dark photon mass, 1e-18 to 1e-22 (eV)
+        m_D = 1e-22 # Dark photon mass, 1e-18 to 1e-22 (eV)
 
-        return f, m_a, m_d
+        return f, m_a, m_D
 
 # Calculate the energy density at the centre of the soliton
 def calculate_rho0(m):
@@ -393,7 +393,7 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
 
     else:
         # Create a figure
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(8, 8))
 
         # Check if yss is a list of data
         if isinstance(yss[0], list):
@@ -448,7 +448,7 @@ def log_tick_formatter(value, position=None):
     return f"$10^{{{int(value)}}}$"
 
 # Plot the 2D data
-def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, xlog=False, ylog=False, zlog=False, save=False):
+def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyle="contourf", xlog=False, ylog=False, zlog=False, save=False):
     """
     Args:
         xs (array): x-coordinates of the data points.
@@ -456,46 +456,74 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, xlog=Fal
         zs (array): z-coordinates of the data points.
         xlabel (str): Label for the x-axis.
         ylabel (str): Label for the y-axis.
-        zlabel (str): Label for the z-axis.
+        zlabel (str): Label for the z-axis or colour bar.
         title (str): Title of the plot.
         figure_name (str): Name of the file to save the plot (if save is True).
+        plotstyle (str, optional): Style of the plot ("contourf" for filled contours, "3D" for surface plot). Defaults to "contourf".
         xlog (bool, optional): Set the x-axis to logarithmic scale. Defaults to False.
         ylog (bool, optional): Set the y-axis to logarithmic scale. Defaults to False.
         zlog (bool, optional): Set the z-axis to logarithmic scale. Defaults to False.
         save (bool, optional): Whether to save the plot. Defaults to False.
     """
 
-    # Create a figure and an axes object for 3D plotting
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111, projection="3d")
+    if plotstyle == "contourf":
+        # Create a figure and axes object for 2D plotting
+        fig, ax = plt.subplots(figsize=(8, 6))
 
-    # Surface plot
-    surf = ax.plot_surface(xs, ys, zs, cmap="viridis", edgecolor="none")
+        # Create a filled contour plot
+        contour = ax.contourf(xs, ys, zs, cmap="viridis")
 
-    # Set major tick formatter and locator for the axes
-    if xlog:
-        ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-        ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
-    if ylog:
-        ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-        ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
-    if zlog:
-        ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-        ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        # Display the colour bar
+        cbar = fig.colorbar(contour, ax=ax, orientation="vertical", fraction=0.046, pad=0.04)
+        cbar.set_label(zlabel) # Set the label for the colour bar
 
-    # Set the axes labels and title
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_zlabel(zlabel)
-    ax.set_title(title)
+        # Configure the axes for logarithmic scaling if specified
+        if xlog:
+            ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+            ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        if ylog:
+            ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        if zlog:  # Assuming z-values are represented in the color bar
+            cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+            cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
-    # Show colour bar
-    cbar = fig.colorbar(surf, shrink=0.75)
-    
-    # Set tick formatter for the colour bar
-    if zlog: # Assuming z-values are represented in the colour bar
-        cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-        cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        # Set the axes labels and title
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.set_title(title)
+
+    elif plotstyle == "3D":
+        # Create a figure and axes object for 3D plotting
+        fig = plt.figure(figsize=(8, 8))
+        ax = fig.add_subplot(111, projection="3d")
+
+        # Create a surface plot
+        surf = ax.plot_surface(xs, ys, zs, cmap="viridis", edgecolor="none")
+
+        # Display the colour bar
+        cbar = fig.colorbar(surf, ax=ax, orientation="vertical", shrink=0.75)
+
+        # Configure the axes for logarithmic scaling if specified
+        if xlog:
+            ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+            ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        if ylog:
+            ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        if zlog:
+            ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
+            ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+
+            # Set tick formatter for the colour bar
+            cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))  # Assuming z-values are represented in the color bar
+            cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+
+        # Set the axes labels and title
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.set_zlabel(zlabel)
+        ax.set_title(title)
 
     # Adjust the spacing
     plt.tight_layout()
@@ -542,7 +570,7 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
     scatter = ax.scatter(xs, ys, zs, c=ws, cmap=cmap, alpha=alpha, s=s)
 
     # Add a colour bar to the plot
-    cbar = plt.colorbar(scatter, shrink=0.75)
+    cbar = plt.colorbar(scatter, ax=ax, orientation="vertical", shrink=0.75)
     cbar.set_label(wlabel)
 
     # Set the axes labels and title
@@ -633,7 +661,7 @@ def main():
     if potential_type == "sech":
         f, m_a = gen_params(potential_type)
     elif potential_type == "flat":
-        f, m_a, m_d = gen_params(potential_type)
+        f, m_a, m_D = gen_params(potential_type)
 
     # Coupling strength
     g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
@@ -641,27 +669,27 @@ def main():
 
     if particle_type == "dark photon":
         # Print the proportionality constant between dark photon and axion
-        print(f"Proportionality constant between dark photon and axion: {epsilon * m_d / (g_ac * B_bar):.2e}.")
+        print(f"Proportionality constant between dark photon and axion: {epsilon * m_D / (g_ac * B_bar):.2e}.")
 
     # Set mass and oscillation frequency based on particle type
     if particle_type == "axion":
         m, omega = m_a, m_a
     elif particle_type == "dark photon":
-        m, omega = m_d, m_d
+        m, omega = m_D, m_D
 
     # Parameter space
     m_as = np.logspace(-22, -18, 100)
-    m_ds = np.logspace(-22, -18, 100)
+    m_Ds = np.logspace(-22, -18, 100)
     fs = np.logspace(23, 27, 100)
     epsilons = np.logspace(-5, -3, 100)
     m_as, fs = np.meshgrid(m_as, fs)
-    m_ds, epsilons = np.meshgrid(m_ds, epsilons)
+    m_Ds, epsilons = np.meshgrid(m_Ds, epsilons)
     B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
-    B1params_d = calculate_B1("flat", "dark photon", 0, m_ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+    B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
 
     # Plot B1 versus the parameter space
     plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
-    plot2D_data(np.log10(m_ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_d$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
+    plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
@@ -700,11 +728,11 @@ def main():
     # Plot B1 versus distance of measurement point from Galactic Centre (r_p)
     r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
     r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
-    f, m_a, m_d = gen_params("flat")
+    f, m_a, m_D = gen_params("flat")
     B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
-    B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_d, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
+    B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
     B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
-    B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_d, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
+    B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
 
     # Plot B1 versus r_p for axion
     plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$\log_{10}(r_p/\mathrm{kpc})$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
@@ -713,10 +741,10 @@ def main():
     plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}res.png", save=True)
     
     # Plot B1 versus r_p for dark photon
-    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / 1e-4, "", r"$\log_{10}(r_p/\mathrm{kpc})$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_d}.png", xlog=True, save=True)
+    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / 1e-4, "", r"$\log_{10}(r_p/\mathrm{kpc})$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}.png", xlog=True, save=True)
     
     # Restrict the radial range for plotting
-    plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_d}res.png", save=True)
+    plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}res.png", save=True)
     
     # Plot the soliton profile for flat potential and axion
     if potential_type == "flat" and particle_type == "axion":
