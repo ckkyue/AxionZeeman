@@ -574,13 +574,12 @@ def main():
         m, omega = m_d, m_d
 
     # Parameter space
-    m_as = np.linspace(1e-22, 1e-18, 100)
-    m_ds = np.linspace(1e-22, 1e-18, 100)
-    f_as = np.linspace(1e23, 1e27, 100)
-    epsilons = np.linspace(1e-5, 1e-3,100)
+    m_as = np.logspace(-22, -18, 100)
+    m_ds = np.logspace(-22, -18, 100)
+    f_as = np.logspace(23, 27, 100)
+    epsilons = np.logspace(-5, -3, 100)
     m_as, f_as = np.meshgrid(m_as, f_as)
     B1params_a = calculate_B1("flat", "axion", 0, m_as, f_as, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
-    B1params_d = calculate_B1("flat", "dark photon", 0, m_ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
