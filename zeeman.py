@@ -342,7 +342,7 @@ def calculate_delta_E(B):
     return delta_E
 
 # Plot the data
-def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, split2=False, save=False):
+def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=False, ylog=False, split2=False, save=False):
     """
     Args:
         xs (list): List of x-values.
@@ -352,6 +352,8 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, split2=Fa
         ylabel (str): Label for the y-axis.
         title (str): Title of the plot.
         figure_name (str): Name of the figure file.
+        xlog (bool, optional): Set the x-axis to logarithmic scale. Defaults to False.
+        ylog (bool, optional): Set the y-axis to logarithmic scale. Defaults to False.
         split2 (bool, optional): Whether to split the plot into two subplots. Defaults to False.
         save (bool, optional): Whether to save the plot. Defaults to False.
     """
@@ -375,6 +377,11 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, split2=Fa
             if plotlabel:
                 ax.legend()
 
+        if xlog:
+            plt.xscale("log")
+        if ylog:
+            plt.yscale("log")
+
         # Set the x label
         plt.xlabel(xlabel)
 
@@ -396,6 +403,11 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, split2=Fa
 
         # Set the x limit
         plt.xlim(np.min(xs), np.max(xs))
+
+        if xlog:
+            plt.xscale("log")
+        if ylog:
+            plt.yscale("log")
 
         # Set the labels
         plt.xlabel(xlabel)
@@ -587,15 +599,17 @@ def main():
     # Plot frequency shift versus time
     plot_data(ts, delta_nus, None, r"$t$ (s)", r"$\Delta\nu$ (Hz)", r"$\Delta\nu$ versus $t$", f"Deltanuvstime{lower_rspace(potential_type)}{lower_rspace(particle_type)}m{m}.png", save=True)
 
-    # Plot B1 versus distance of measurement point from Galactic Centre
-    r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 1000)
+    # Plot B1 versus distance of measurement point from Galactic Centre (r_p)
+    r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
     f, m_a, m_d, mu, omega_a, omega_d = gen_params("flat")
     B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, omega_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
     B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_d, omega_d, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
-    plt.plot(r_ps, B1r_ps_a / 1e-4)
-    plt.show()
-    plt.plot(r_ps, B1r_ps_d / 1e-4)
-    plt.show()
+
+    # Plot B1 versus r_p for axion
+    plot_data(r_ps / r_c, B1r_ps_a / 1e-4, "", r"$\log_{10}(r_p/r_c)$", r"$|\vec{B}_{1, a}|$ (G)", r"$|\vec{B}_{1, a}|$ versus $r_p/r_c$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
+    
+    # Plot B1 versus r_p for dark photon
+    plot_data(r_ps / r_c, B1r_ps_d / 1e-4, "", r"$\log_{10}(r_p/r_c)$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"$|\vec{B}_{1, \vec{A}'}|$ versus $r_p/r_c$", f"B1vsrpflatdarkphotonm{m_d}.png", xlog=True, save=True)
     
     # Plot the soliton profile for flat potential and axion
     if potential_type == "flat" and particle_type == "axion":
