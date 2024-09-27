@@ -227,19 +227,20 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, re
         else:
             I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
 
-        # Calculate B1 components
-        B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
-        B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
-        B1_z_complex = 0 # No contribution in the z direction
-
         # Compute magnitudes of B1 components
         if real:
+            B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
+            B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
+            B1_z_complex = 0 # No contribution in the z direction
             B1_x = np.real(B1_x_complex)
             B1_y = np.real(B1_y_complex)
             B1_z = np.real(B1_z_complex)
             B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
 
         else:
+            B1_x_complex = coeff * B_bar_y * I
+            B1_y_complex = coeff * - B_bar_x * I
+            B1_z_complex = 0 # No contribution in the z direction
             B1_x = np.abs(B1_x_complex)
             B1_y = np.abs(B1_y_complex)
             B1_z = np.abs(B1_z_complex)
@@ -433,6 +434,59 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
     # Show the plot
     plt.show()
 
+# Plot the 2D data
+def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, xlog=False, ylog=False, zlog=False, save=False):
+    """
+    Args:
+        xs (array): x-coordinates of the data points.
+        ys (array): y-coordinates of the data points.
+        zs (array): z-coordinates of the data points.
+        xlabel (str): Label for the x-axis.
+        ylabel (str): Label for the y-axis.
+        zlabel (str): Label for the z-axis.
+        title (str): Title of the plot.
+        figure_name (str): Name of the file to save the plot (if save is True).
+        xlog (bool, optional): Set the x-axis to logarithmic scale. Defaults to False.
+        ylog (bool, optional): Set the y-axis to logarithmic scale. Defaults to False.
+        zlog (bool, optional): Set the z-axis to logarithmic scale. Defaults to False.
+        save (bool, optional): Whether to save the plot. Defaults to False.
+    """
+
+    # Create a figure and an axes object for 3D plotting
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, projection="3d")
+
+    # Surface plot
+    surf = ax.plot_surface(xs, ys, zs, cmap="viridis", edgecolor="none")
+
+    # Set the axes to logarithmic scale if necessary
+    if xlog:
+        ax.set_xscale("log")
+    if ylog:
+        ax.set_yscale("log")
+    if zlog:
+        ax.set_zscale("log")
+
+    # Labels and title
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
+    ax.set_title(title)
+
+    # Show coloru bar
+    fig.colorbar(surf, shrink=0.75)
+
+    # Adjust the spacing
+    plt.tight_layout()
+
+    # Save the plot if required
+    if save:
+        filename = os.path.join("Figure", figure_name)
+        plt.savefig(filename, dpi=300)
+    
+    # Show the plot
+    plt.show()
+
 # Plots the 3D data
 def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_name, xlog=False, ylog=False, zlog=False, cmap_name="plasma_r", alpha=0.7, s=20, save=False):
     """
@@ -579,7 +633,13 @@ def main():
     fs = np.logspace(23, 27, 100)
     epsilons = np.logspace(-5, -3, 100)
     m_as, fs = np.meshgrid(m_as, fs)
+    m_ds, epsilons = np.meshgrid(m_ds, epsilons)
     B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+    B1params_d = calculate_B1("flat", "dark photon", 0, m_ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+
+    # Plot B1 versus the parameter space
+    plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$\log_{10}m_a$ (eV)", r"$\log_{10}f_a$ (eV)", r"$\log_{10}|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", save=True)
+    plot2D_data(np.log10(m_ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$\log_{10}m_d$ (eV)", r"$\log_{10}\varepsilon$", r"$\log_{10}|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", save=True)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
