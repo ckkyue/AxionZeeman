@@ -31,6 +31,34 @@ pc_to_m = u.pc.to(u.m)
 s_to_eVminus1 = e_au / hbar
 T_to_eV2 = kg_to_eV / C_to_eV / s_to_eVminus1
 
+# Parameters of L1544
+dist_l1544 = 140 * u.pc # Distance to L1544
+ra_l1544 = (5 * 15 + 4 / 4 + 17.21 / 240) * u.deg # Right ascension
+dec_l1544 = (25 + 10 / 60 + 42.8 / 3600) * u.deg # Declination
+
+# Create SkyCoord object for L1544 and convert to Cartesian
+coord_l1544 = SkyCoord(ra=ra_l1544, dec=dec_l1544, distance=dist_l1544)
+cart_l1544 = coord_l1544.cartesian
+
+# Parameters of Galactic Centre
+dist_gc = 8 * 1e3 * u.pc # Distance to Galactic Centre
+l_gc = 0 * u.deg # Galactic longitude
+b_gc = 0 * u.deg # Galactic latitude
+
+# Create SkyCoord object for Galactic Centre and convert to Cartesian
+coord_gc = SkyCoord(l=l_gc, b=b_gc, distance=dist_gc, frame="galactic")
+cart_gc = coord_gc.icrs.cartesian
+
+# Position vector from Galactic Centre to L1544
+cart_gctol1544 = cart_l1544 - cart_gc
+
+# Core radius (pc)
+r_c_pc = 180
+r_c = r_c_pc * pc_to_m * m_to_eVminus1
+
+# Scaling constants of Tom's profile (arXiv: 1406.6586v1)
+a = (0.091 / r_c_pc**2) * (pc_to_m * m_to_eVminus1)**(-2) # Scaling constant of axion (eV^2)
+
 # Convert the string to lowercase and remove all spaces
 def lower_rspace(string):
     """
@@ -43,85 +71,44 @@ def lower_rspace(string):
 
     return string.lower().replace(" ", "")
 
-# Calculate the magnitude of magnetic field
-def calculate_B1(potential_type, particle_type, t, params):
+# Generate the parameters
+def gen_params(potential_type):
     """
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
-        particle_type (str): Type of particle ("axion" or "dark photon").
-        t (float): Time.
-        params (dict): Dictionary of parameters.
-
-    Returns:
-        float: Magnitude of the magnetic field.
     """
 
-    # Common parameters of sech and flat potentials
-    B_bar = params.get("B_bar")
-    r_p = params.get("r_p")
-    phi0 = params.get("phi0")
-    g_ac = params.get("g_ac")
-    omega = None
-
-    # sech potential
     if potential_type == "sech":
-        omega_a = params.get("omega_a")
-        omega = omega_a
-        R = params.get("R")
+        f = 1e19 # Energy scale of axion (eV)
+        m_a = 1e-5 # Axion mass, 1e-18 to 1e-22 (eV)
+        omega_a = m_a # Oscillation frequency of axion (eV)
 
-        # Calculate B1
-        B1 = B_bar / r_p * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
-    
-        return B1
+        return f, m_a, omega_a
 
-    # flat potential
     elif potential_type == "flat":
-        # Common parameters of axion and dark photon
-        cutoff_factor = np.sqrt((2**(1 / 4) - 1) / 0.091)
-        a = None
-        r_c = params.get("r_c")
-        r_cutoff = cutoff_factor * r_c
+        f = 1e26 # Energy scale of axion (eV)
+        m_a = 1e-22 # Axion mass, 1e-18 to 1e-22 (eV)
+        m_d = 1e-22 # Dark photon mass, 1e-18 to 1e-22 (eV)
+        mu = 0 # Chemical potential of dark photon (eV)
+        omega_a = m_a # Oscillation frequency of axion (eV)
+        omega_d = m_d - mu # Oscillation frequency of dark photon (eV)
 
-        # Set parameters based on the particle type
-        if particle_type == "axion":
-            omega_a = params.get("omega_a")
-            a_a = params.get("a_a")
-            omega, a = omega_a, a_a
-            B_bar_x, B_bar_y, B_bar_z = 0, B_bar, 0 # Decompose B_bar into Cartesian coordinates
-            coeff = omega * g_ac * phi0 # Coefficient for axion
+        return f, m_a, m_d, mu, omega_a, omega_d
 
-        # Dark photon
-        elif particle_type == "dark photon":
-            A0 = params.get("A0")
-            epsilon = params.get("epsilon")
-            m_d = params.get("m_d")
-            omega_d = params.get("omega_d")
-            a_d = params.get("a_d")
-            omega, a = omega_d, a_d
-            B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field representing the circular polarization vector
-            coeff = epsilon * m_d**2 * A0 # Coefficient for dark photon
-        
-        # Calculate the integral based on the cutoff radius
-        if r_p > r_cutoff:
-            I = (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3)
-        else:
-            I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
+# Calculate the energy density at the centre of the soliton
+def calculate_rho0(m):
+    """
+    Args:
+        m (float): Particle mass.
+    """
 
-        # Calculate B1 components
-        B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
-        B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
-        B1_z_complex = 0 # No contribution in the z direction
+    rho0 = 1.9 * (m / 1e-23)**(-2) * (r_c_pc / 1e3)**(-4) * M_s
+    rho0 *= kg_to_eV * (pc_to_m * m_to_eVminus1)**(-3)
 
-        # Compute magnitudes
-        B1_x = np.real(B1_x_complex)
-        B1_y = np.real(B1_y_complex)
-        B1_z = np.real(B1_z_complex)
-        B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
-
-        return B1
+    return rho0
 
 # Calculate the density profile
-def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, apx=False):
+def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, step=False):
     """
     Args:
         rho0 (float): Energy density at the centre of the soliton.
@@ -129,7 +116,7 @@ def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, apx=False):
         r (float): Distance from the centre of the soliton.
         r_c (float): Core radius of the soliton.
         cutoff_factor (float): Used for calculating the cutoff radius.
-        apx (bool, optional): Whether to use an approximate density profile. Defaults to False.
+        step (bool, optional): Whether to use a step function density profile. Defaults to False.
 
     Returns:
         float: Density at the given distance.
@@ -138,7 +125,7 @@ def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, apx=False):
     # Calculate the cutoff radius
     r_cutoff = cutoff_factor * r_c
 
-    if apx:
+    if step:
         if r <= r_cutoff:
 
             return rho0
@@ -165,6 +152,100 @@ def calculate_phi(rho, m_a):
     phi = (2 * rho)**(1 / 2) / m_a
     
     return phi
+
+# Calculate the coupling constant
+def calculate_gac(potential_type, f):
+    """
+    Args:
+        potential_type (str): Type of potential ("sech" or "flat").
+        f (float): Energy scale of axion.
+    """
+
+    if potential_type == "sech":
+        g_ac = 0.66e-19
+
+    elif potential_type == "flat":
+        g_ac = alpha / np.pi / f
+        
+    return g_ac
+
+# Calculate the magnitude of magnetic field
+def calculate_B1(potential_type, particle_type, t, m, omega, f, epsilon, r_p, B_bar, real=True):
+    """
+    Args:
+        potential_type (str): Type of potential ("sech" or "flat").
+        particle_type (str): Type of particle ("axion" or "dark photon").
+        t (float): Time.
+        m (float): Particle mass.
+        omega (float): Oscillation frequency.
+        f (float): Energy scale of axion.
+        epsilon (float): Photon-dark photon coupling strength
+        real (bool, optional): Whether to take the real parts of magnetic field components. Defaults to True.
+
+    Returns:
+        float: Magnitude of the magnetic field.
+    """
+
+    # sech potential
+    if potential_type == "sech":
+        g_ac = calculate_gac(potential_type, f)
+        phi0 = 3 * f # Amplitude of axion potential (eV)
+        omega = 0.8 * m # Oscillation frequency (eV)
+        R = 2 / m # Radius of axion star (eV^-1)
+
+        # Calculate B1
+        B1 = B_bar / r_p * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
+    
+        return B1
+
+    # flat potential
+    elif potential_type == "flat":
+        # Common parameters for axion and dark photon
+        cutoff_factor = np.sqrt((2**(1 / 4) - 1) / 0.091)
+        r_cutoff = cutoff_factor * r_c
+        
+        # Calculate the energy density at the centre of the soliton
+        rho0 = calculate_rho0(m)
+
+        # Calculate the amplitude of fields
+        phi0 = calculate_phi(rho0, m)
+        A0 = phi0
+
+        # Set parameters based on the particle type
+        if particle_type == "axion":
+            g_ac = calculate_gac(potential_type, f)
+            B_bar_x, B_bar_y, B_bar_z = 0, B_bar, 0 # Decompose B_bar into Cartesian coordinates
+            coeff = omega * g_ac * phi0 # Coefficient for axion
+
+        elif particle_type == "dark photon":
+            B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field representing the circular polarization vector
+            coeff = epsilon * m**2 * A0 # Coefficient for dark photon
+        
+        # Calculate the integral based on the cutoff radius
+        if r_p > r_cutoff:
+            I = (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3)
+        else:
+            I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
+
+        # Calculate B1 components
+        B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
+        B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
+        B1_z_complex = 0 # No contribution in the z direction
+
+        # Compute magnitudes
+        if real:
+            B1_x = np.real(B1_x_complex)
+            B1_y = np.real(B1_y_complex)
+            B1_z = np.real(B1_z_complex)
+            B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
+
+        else:
+            B1_x = np.abs(B1_x_complex)
+            B1_y = np.abs(B1_y_complex)
+            B1_z = np.abs(B1_z_complex)
+            B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
+
+        return B1
 
 # Calculate the Landé g-factor
 def calculate_g_j(g_e, l, s, j):
@@ -339,7 +420,7 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, split2=Fa
     plt.show()
 
 # Generate meshgrid
-def generate_meshgrid(x_range, y_range, z_range, num_points):
+def gen_meshgrid(x_range, y_range, z_range, num_points):
     """
     Args:
         x_range (tuple): The range of values for the x-axis.
@@ -429,27 +510,6 @@ def main():
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-    # Parameters of L1544
-    dist_l1544 = 140 * u.pc # Distance to L1544
-    ra_l1544 = (5 * 15 + 4 / 4 + 17.21 / 240) * u.deg # Right ascension
-    dec_l1544 = (25 + 10 / 60 + 42.8 / 3600) * u.deg # Declination
-
-    # Create SkyCoord object for L1544 and convert to Cartesian
-    coord_l1544 = SkyCoord(ra=ra_l1544, dec=dec_l1544, distance=dist_l1544)
-    cart_l1544 = coord_l1544.cartesian
-
-    # Parameters of Galactic Centre
-    dist_gc = 8 * 1e3 * u.pc # Distance to Galactic Centre
-    l_gc = 0 * u.deg # Galactic longitude
-    b_gc = 0 * u.deg # Galactic latitude
-
-    # Create SkyCoord object for Galactic Centre and convert to Cartesian
-    coord_gc = SkyCoord(l=l_gc, b=b_gc, distance=dist_gc, frame="galactic")
-    cart_gc = coord_gc.icrs.cartesian
-
-    # Position vector from Galactic Centre to L1544
-    cart_gctol1544 = cart_l1544 - cart_gc
-
     # Calculate the distance of L1544 from Galactic Centre (pc)
     r_p = np.linalg.norm(cart_gctol1544.xyz)
 
@@ -457,99 +517,41 @@ def main():
     angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (r_p * np.linalg.norm(cart_l1544.xyz)))
     print(f"The angle between the vector from Galactic Centre to L1544 and the vector to L1544 is {angle:.2e}.")
 
-    # Calculate the internal magnetic field
-    B_int = 1 / (4 * pi * epsilon_0) * e_au / (m_e * c**2 * r_e**3) * hbar
-    print(f"The magnitude of internal magnetic field is roughly {B_int:.2f}T.")
-
-    # Specify the potential and particle types
-    potential_type = "flat" # sech or flat
-    particle_type = "axion" # axion or dark photon
-
-    # Common parameters
-    B_bar = 1e-10 # Background magnetic field (T)
-    print(f"The magnitude of background magnetic field is {B_bar * T_to_eV2:.2e}eV^2.")
-
     # Calculate distance of L1544 from Galactic Centre (eV^-1)
     r_p = r_p.value * pc_to_m * m_to_eVminus1
     print(f"The distance of L1544 from Galactic Centre is {r_p:.2e}eV^-1.")
 
-    # Set fiducial parameters
-    if potential_type == "sech":
-        # Parameters of sech potential
-        f = 1e19 # Energy scale of axion (eV)
-        phi0 = 3 * f # Amplitude of axion potential (eV)
-        g_ac = 0.66e-19 # Coupling constant (eV^-1)
-        m_a = 1e-5 # Axion mass (eV)
-        omega_a = 0.8 * m_a # Oscillation frequency (eV)
-        R = 2 / m_a # Radius of axion star (eV^-1)
+    # Calculate the internal magnetic field of a hydrogen atom
+    B_int = 1 / (4 * pi * epsilon_0) * e_au / (m_e * c**2 * r_e**3) * hbar
+    print(f"The magnitude of internal magnetic field is roughly {B_int:.2f}T.")
 
-        # Define parameters dictionary
-        params = {
-            "B_bar": B_bar,
-            "r_p": r_p,
-            "phi0": phi0,
-            "g_ac": g_ac,
-            "omega_a": omega_a,
-            "R": R
-        }
+    # Specify the potential and particle types
+    potential_type = "sech" # sech or flat
+    particle_type = "axion" # axion or dark photon
+
+    # Background magnetic field (T)
+    B_bar = 1e-10
+    print(f"The magnitude of background magnetic field is {B_bar * T_to_eV2:.2e}eV^2.")
+
+    # Set parameters based on potential type
+    if potential_type == "sech":
+        f, m_a, omega_a = gen_params(potential_type)
+        g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
+        epsilon = 1e-3 # Photon-dark photon coupling strength, 1e-5 to 1e-3
 
     elif potential_type == "flat":
-        # Parameters of flat potential
-        f = 1e26 # Energy scale of axion (eV)
-        m_a = 1e-22 # Axion mass, 1e-18 to 1e-22 (eV)
-        m_d = 1e-22 # Dark photon mass, 1e-18 to 1e-22 (eV)
-        mu = 1e-6 * m_d # Chemical potential of dark photon (eV)
-        r_c_pc = 180 # Core radius (pc)
-
-        # Calculate mass density of axion field (eV^4)
-        rho0 = 1.9 * (m_a / 1e-23)**(-2) * (r_c_pc / 1e3)**(-4) * M_s
-        rho0 *= kg_to_eV * (pc_to_m * m_to_eVminus1)**(-3)
-
-        # Scaling constants
-        a_a = (9.1e-2 / r_c_pc**2) * (pc_to_m * m_to_eVminus1)**(-2) # Scaling constant of axion (eV^2)
-        a_d = a_a # Scaling constant of dark photon (eV^2)
-
-        # Core radius (eV^-1)
-        r_c = r_c_pc * pc_to_m * m_to_eVminus1
-
-        # Calculate amplitudes
-        phi0 = (2 * rho0)**0.5 / m_a # Amplitude of axion potential (eV)
-        A0 = phi0 # Amplitude of dark photon potential (eV)
-
-        # Coupling constants and frequencies
-        g_ac = alpha / np.pi / f # Coupling constant (eV^-1)
-        epsilon = 1e-3 # Coupling strength, 1e-3 to 1e-5
-        omega_a = m_a # Oscillation frequency of axion (eV)
-        omega_d = m_d - mu # Oscillation frequency of dark photon (eV)
+        f, m_a, m_d, mu, omega_a, omega_d = gen_params(potential_type)
+        g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
+        epsilon = 1e-3 # Photon-dark photon coupling strength, 1e-5 to 1e-3
 
         # Print the proportionality constant between dark photon and axion
         print(f"Proportionality constant between dark photon and axion: {epsilon * m_d / (g_ac * B_bar):.2e}.")
 
-        # Define parameters dictionary
-        params = {
-            "B_bar": B_bar,
-            "r_p": r_p,
-            "phi0": phi0,
-            "A0": A0,
-            "g_ac": g_ac,
-            "epsilon": epsilon,
-            "omega_a": omega_a,
-            "omega_d": omega_d,
-            "m_d": m_d,
-            "a_a": a_a,
-            "a_d": a_d,
-            "r_c": r_c
-        }
-
-    # Print the parameters
-    for key, value in params.items():
-        print(f"{key}: {value:.2e}")
-
-    # Define oscillation frequency and mass based on particle type
+    # Set mass and oscillation frequency based on particle type
     if particle_type == "axion":
-        omega, m = omega_a, m_a
+        m, omega = m_a, omega_a
     elif particle_type == "dark photon":
-        omega, m = omega_d, m_d
+        m, omega = m_d, omega_d
 
     # Calculate the period of oscillation
     period = period = 2 * np.pi / omega / s_to_eVminus1
@@ -559,7 +561,7 @@ def main():
     ts = np.linspace(0, 4 * period, 1000)
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, params) for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, omega, f, epsilon, r_p, B_bar) for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
@@ -585,6 +587,17 @@ def main():
     # Plot frequency shift versus time
     plot_data(ts, delta_nus, None, r"$t$ (s)", r"$\Delta\nu$ (Hz)", r"$\Delta\nu$ versus $t$", f"Deltanuvstime{lower_rspace(potential_type)}{lower_rspace(particle_type)}m{m}.png", save=True)
 
+    # Plot B1 versus distance of measurement point from Galactic Centre
+    r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 1000)
+    f, m_a, m_d, mu, omega_a, omega_d = gen_params("flat")
+    B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, omega_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
+    B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_d, omega_d, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
+    plt.plot(r_ps, B1r_ps_a / 1e-4)
+    plt.show()
+    plt.plot(r_ps, B1r_ps_d / 1e-4)
+    plt.show()
+    
+    # Plot the soliton profile for flat potential and axion
     if potential_type == "flat" and particle_type == "axion":
         # Define radial range
         rs = np.linspace(0, 3 * r_c, 10000)
@@ -596,16 +609,17 @@ def main():
         z_range = (- 2 * r_c, 2 * r_c)
 
         # Generate the meshgrid
-        xs, ys, zs = generate_meshgrid(x_range, y_range, z_range, 15)
+        xs, ys, zs = gen_meshgrid(x_range, y_range, z_range, 15)
         xs_scaled = xs / r_c
         ys_scaled = ys / r_c
         zs_scaled = zs / r_c
 
         # Calculate the axion density profile
-        rhos = [calculate_rho(rho0, a_a, r, r_c) for r in rs]
-        rhos_rc = [calculate_rho(rho0, a_a, r, r_c, apx=True) for r in rs]
-        rhos_mod = [calculate_rho(rho0, a_a, r, r_c, cutoff_factor=np.sqrt((2**(1 / 4) - 1) / 0.091), apx=True) for r in rs]
-        rhos_3d = calculate_rho(rho0, a_a, np.sqrt(xs**2 + ys**2 + zs**2), r_c)
+        rho0 = calculate_rho0(m)
+        rhos = [calculate_rho(rho0, a, r, r_c) for r in rs]
+        rhos_rc = [calculate_rho(rho0, a, r, r_c, step=True) for r in rs]
+        rhos_mod = [calculate_rho(rho0, a, r, r_c, cutoff_factor=np.sqrt((2**(1 / 4) - 1) / 0.091), step=True) for r in rs]
+        rhos_3d = calculate_rho(rho0, a, np.sqrt(xs**2 + ys**2 + zs**2), r_c)
 
         # Calculate axion field strength from density
         phis = [calculate_phi(rho0, m_a) for rho0 in rhos]
@@ -616,7 +630,7 @@ def main():
         plot_data(rs_scaled, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
 
         # Plot exact and approximate axion density profiles
-        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhoapx.png", save=True)
+        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion field strength", "axionrhostep.png", save=True)
 
         # Plot axion density profile in 3D
         plot3D_data(xs_scaled, ys_scaled, zs_scaled, rhos_3d, r"$x/r_c$", r"$y/r_c$", r"$z/r_c$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile in 3D", "axionrho3d.png", save=True)
@@ -625,7 +639,7 @@ def main():
         plot_data(rs_scaled, phis, None, r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphim{m_a}.png", save=True)
 
         # Plot exact and approximate axion field strengths
-        plot_data(rs_scaled, [phis, phis_rc, phis_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphiapx{m_a}.png", save=True)
+        plot_data(rs_scaled, [phis, phis_rc, phis_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphistep{m_a}.png", save=True)
 
 # Run the main program
 if __name__ == "__main__":
