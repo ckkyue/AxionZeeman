@@ -60,6 +60,9 @@ r_c = r_c_pc * pc_to_m * m_to_eVminus1
 # Scaling constants of Tom's profile (arXiv: 1406.6586v1)
 a = (0.091 / r_c_pc**2) * (pc_to_m * m_to_eVminus1)**(-2) # Scaling constant of axion (eV^2)
 
+# Chemical potential of dark photon
+mu = 0
+
 # Convert the string to lowercase and remove all spaces
 def lower_rspace(string):
     """
@@ -217,7 +220,6 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, re
             coeff = omega * g_ac * phi0 # Coefficient for axion
 
         elif particle_type == "dark photon":
-            mu = 0 # Chemical potential
             omega = m - mu
             B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field representing the circular polarization vector
             coeff = epsilon * m**2 * A0 # Coefficient for dark photon
@@ -294,6 +296,7 @@ def calculate_E_Z(g_j, B, m_j):
     """
 
     E_Z = mu_B * g_j * B * m_j
+
     return E_Z
 
 # Calculate the hyperfine energy
@@ -675,21 +678,23 @@ def main():
     if particle_type == "axion":
         m, omega = m_a, m_a
     elif particle_type == "dark photon":
-        m, omega = m_D, m_D
+        m, omega = m_D, m_D - mu
 
-    # Parameter space
-    m_as = np.logspace(-22, -18, 100)
-    m_Ds = np.logspace(-22, -18, 100)
-    fs = np.logspace(23, 27, 100)
-    epsilons = np.logspace(-5, -3, 100)
-    m_as, fs = np.meshgrid(m_as, fs)
-    m_Ds, epsilons = np.meshgrid(m_Ds, epsilons)
-    B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
-    B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+    params = False
+    if params:
+        # Parameter space
+        m_as = np.logspace(-22, -18, 2000)
+        m_Ds = np.logspace(-22, -18, 2000)
+        fs = np.logspace(23, 27, 2000)
+        epsilons = np.logspace(-5, -3, 2000)
+        m_as, fs = np.meshgrid(m_as, fs)
+        m_Ds, epsilons = np.meshgrid(m_Ds, epsilons)
+        B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+        B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
 
-    # Plot B1 versus the parameter space
-    plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
-    plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
+        # Plot B1 versus the parameter space
+        plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
+        plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
@@ -735,13 +740,13 @@ def main():
     B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
 
     # Plot B1 versus r_p for axion
-    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$\log_{10}(r_p/\mathrm{kpc})$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
+    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
     
     # Restrict the radial range for plotting
     plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}res.png", save=True)
     
     # Plot B1 versus r_p for dark photon
-    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / 1e-4, "", r"$\log_{10}(r_p/\mathrm{kpc})$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}.png", xlog=True, save=True)
+    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}.png", xlog=True, save=True)
     
     # Restrict the radial range for plotting
     plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}res.png", save=True)
