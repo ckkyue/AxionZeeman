@@ -80,26 +80,39 @@ def gen_params(potential_type):
     """
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
+
+    Returns:
+        tuple: Parameters based on the potential type.
+            - For "sech":
+                - f (float): Energy scale of axion.
+                - m_a (float): Axion mass.
+            - For "flat":
+                - f (float): Energy scale of axion.
+                - m_a (float): Axion mass.
+                - m_D (float): Dark photon mass.
     """
 
     if potential_type == "sech":
-        f = 1e19 # Energy scale of axion (eV)
-        m_a = 1e-5 # Axion mass (eV)
+        f = 1e19
+        m_a = 1e-5
 
         return f, m_a
 
     elif potential_type == "flat":
-        f = 1e26 # Energy scale of axion (eV)
-        m_a = 1e-22 # Axion mass, 1e-18 to 1e-22 (eV)
-        m_D = 1e-22 # Dark photon mass, 1e-18 to 1e-22 (eV)
+        f = 1e26
+        m_a = 1e-22
+        m_D = 1e-22
 
         return f, m_a, m_D
 
-# Calculate the energy density at the centre of the soliton
+# Calculate the energy density at the center of the soliton
 def calculate_rho0(m):
     """
     Args:
         m (float): Particle mass.
+
+    Returns:
+        float: Energy density at the center of the soliton.
     """
 
     rho0 = 1.9 * (m / 1e-23)**(-2) * (r_c_pc / 1e3)**(-4) * M_s
@@ -159,13 +172,16 @@ def calculate_gac(potential_type, f):
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
         f (float): Energy scale of axion.
+
+    Returns:
+        float: Coupling constant.
     """
 
     if potential_type == "sech":
         g_ac = 0.66e-19
 
     elif potential_type == "flat":
-        g_ac = alpha / np.pi / f
+        g_ac = alpha / pi / f
         
     return g_ac
 
@@ -189,7 +205,7 @@ def calculate_I(r_p, r_cutoff, omega):
 
     return I
 
-# Calculate the magnitude of magnetic field
+# Calculate the magnitude of the magnetic field induced by the soliton
 def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, phi_p, B_bar):
     """
     Args:
@@ -203,7 +219,6 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
         theta_p (float): theta displacement of the measurement point.
         phi_p (float): phi displacement of the measurement point.
         B_bar (float): Magnitude of the background magnetic field.
-        real (bool, optional): Whether to take the real parts of the magnetic field components. Defaults to True.
 
     Returns:
         float: Magnitude of the magnetic field.
@@ -212,14 +227,14 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
     # sech potential
     if potential_type == "sech":
         g_ac = calculate_gac(potential_type, f) # Calculate the axion-photon coupling strength
-        phi0 = 3 * f # Calculate the axion field strength (eV)
-        omega = 0.8 * m # Oscillation frequency (eV)
-        R = 2 / m # Radius of axion star (eV^-1)
+        phi0 = 3 * f # Calculate the axion field strength
+        omega = 0.8 * m # Oscillation frequency
+        R = 2 / m # Radius of axion star
 
         # Calculate B1
-        B1 = B_bar / r_p * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
+        B1 = B_bar / r_p * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * pi**2 * R**2 * np.tanh(pi * omega * R / 2) / np.cosh(pi * omega * R / 2)
     
-        return B1
+        return np.array([B1])
 
     # flat potential
     elif potential_type == "flat":
@@ -258,7 +273,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
         B1_z = np.real(B1_z_complex)
         B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
 
-        return B1
+        return np.array([B1, B1_x, B1_y, B1_z])
 
 # Calculate the Landé g-factor
 def calculate_g_j(g_e, l, s, j):
@@ -277,7 +292,7 @@ def calculate_g_j(g_e, l, s, j):
 
     return g_j
 
-# Calculate the energy levels of hydrogen
+# Calculate the energy level of hydrogen
 def calculate_E_nj(n, j):
     """
     Args:
@@ -662,7 +677,7 @@ def main():
     print(f"The magnitude of internal magnetic field is roughly {B_int:.2f}T.")
 
     # Specify the potential and particle types
-    potential_type = "sech" # sech or flat
+    potential_type = "flat" # sech or flat
     particle_type = "axion" # axion or dark photon
 
     # Background magnetic field (T)
@@ -698,22 +713,28 @@ def main():
         epsilons = np.logspace(-5, -3, 2000)
         m_as, fs = np.meshgrid(m_as, fs)
         m_Ds, epsilons = np.meshgrid(m_Ds, epsilons)
-        B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, 0, 0, B_bar)
-        B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, 0, 0, B_bar)
+        B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, 0, 0, B_bar)[0]
+        B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, 0, 0, B_bar)[0]
 
         # Plot B1 versus the parameter space
         plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
         plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
+    r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
+    phi_ps = np.linspace(0, 2 * pi, 10000)
+    r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
+    B1polar_d = calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_ps, pi / 2, phi_ps, B_bar)[0]
+    print(B1polar_d)
+
     # Calculate the period of oscillation
-    period = 2 * np.pi / omega / s_to_eVminus1
+    period = 2 * pi / omega / s_to_eVminus1
     print(f"Period: {round(period / year, 2)}yr.")
 
     # Define the time range
     ts = np.linspace(0, 4 * period, 1000)
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, 0, 0, B_bar) for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, 0, 0, B_bar)[0] for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
@@ -745,10 +766,10 @@ def main():
         r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
         r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
         f, m_a, m_D = gen_params("flat")
-        B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps])
-        B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps])
-        B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps_res])
-        B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps_res])
+        B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps])
+        B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps])
+        B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps_res])
+        B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps_res])
 
         # Plot B1 versus r_p for axion
         plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
@@ -761,10 +782,6 @@ def main():
         
         # Restrict the radial range for plotting
         plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}res.png", save=True)
-
-    # Create a grid of r_p and phi_p values
-    phi_ps = np.linspace(0, 2 * np.pi, 10000) # Angle from 0 to 2π
-    r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
     
     # Plot the soliton profile for flat potential and axion
     if potential_type == "flat" and particle_type == "axion":

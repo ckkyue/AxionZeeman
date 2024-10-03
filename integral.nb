@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    359263,       8206]
-NotebookOptionsPosition[    343200,       7950]
-NotebookOutlinePosition[    343617,       7967]
-CellTagsIndexPosition[    343574,       7964]
+NotebookDataLength[    359471,       8208]
+NotebookOptionsPosition[    343408,       7952]
+NotebookOutlinePosition[    343825,       7969]
+CellTagsIndexPosition[    343782,       7966]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -7621,7 +7621,7 @@ Cell[BoxData[
   3.936311570264325*^9, 3.936311679500807*^9}, {3.936311735935164*^9, 
   3.936311756876988*^9}, {3.936312192985441*^9, 3.936312229052011*^9}, {
   3.93692699019487*^9, 3.936927109400722*^9}},
- CellLabel->"In[7]:=",ExpressionUUID->"0089195e-98ed-4268-ba41-f184f5b43ea5"],
+ CellLabel->"In[1]:=",ExpressionUUID->"0089195e-98ed-4268-ba41-f184f5b43ea5"],
 
 Cell[CellGroupData[{
 
@@ -7669,10 +7669,10 @@ Cell[BoxData[
    3.936927109768529*^9, 3.936927151583513*^9, 3.936939427355927*^9, 
    3.936940190569695*^9, 3.936940817777608*^9, 3.936940947295185*^9, 
    3.9369461814379473`*^9, 3.936948954933872*^9, 3.936949904440281*^9, 
-   3.936952023340564*^9, 3.936954501793921*^9},
+   3.936952023340564*^9, 3.936954501793921*^9, 3.9369648815575447`*^9},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[7]:=",ExpressionUUID->"1341f1b0-6d38-4a15-b621-\
-658cb274719f"],
+  "\:8a08\:7b97\:4e2d\:ff1aIn[1]:=",ExpressionUUID->"f1a823b2-43bb-4d13-84f1-\
+20213a12fb15"],
 
 Cell[BoxData[
  InterpretationBox[
@@ -7718,10 +7718,10 @@ Cell[BoxData[
    3.936927109768529*^9, 3.936927151583513*^9, 3.936939427355927*^9, 
    3.936940190569695*^9, 3.936940817777608*^9, 3.936940947295185*^9, 
    3.9369461814379473`*^9, 3.936948954933872*^9, 3.936949904440281*^9, 
-   3.936952023340564*^9, 3.9369545018232317`*^9},
+   3.936952023340564*^9, 3.936954501793921*^9, 3.936964881616775*^9},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[7]:=",ExpressionUUID->"59df45a3-aae7-4021-9993-\
-1a1182490e02"]
+  "\:8a08\:7b97\:4e2d\:ff1aIn[1]:=",ExpressionUUID->"4019b59d-9372-45a5-bdd6-\
+f6638c44a3f3"]
 }, Open  ]]
 }, Open  ]],
 
@@ -7748,7 +7748,7 @@ Cell[BoxData[
   3.936312175070588*^9, 3.936312182025579*^9}, {3.936312233777979*^9, 
   3.9363122820236273`*^9}, {3.936313317961068*^9, 3.936313318393486*^9}, {
   3.936927159084426*^9, 3.936927166165989*^9}},
- CellLabel->"In[13]:=",ExpressionUUID->"ee31c98f-b8a3-48a7-8274-9612a7b192c2"],
+ CellLabel->"In[7]:=",ExpressionUUID->"ee31c98f-b8a3-48a7-8274-9612a7b192c2"],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -7781,8 +7781,9 @@ Cell[BoxData[
    3.9363437876971283`*^9, 3.936926775717087*^9, 3.936927168698441*^9, 
    3.936939430339655*^9, 3.936940192046886*^9, 3.936940819914077*^9, 
    3.936940948170105*^9, 3.936946185163918*^9, 3.936948956835684*^9, 
-   3.93694990568305*^9, 3.936952024162476*^9, 3.9369545033919563`*^9},
- CellLabel->"Out[14]=",ExpressionUUID->"4b0e33e9-4878-42a3-bc10-97ed115ac1f7"]
+   3.93694990568305*^9, 3.936952024162476*^9, 3.936954503391957*^9, 
+   3.93696488488581*^9},
+ CellLabel->"Out[8]=",ExpressionUUID->"d48422c1-90ed-4bee-b7d1-c73c2daf56aa"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -7795,7 +7796,7 @@ Cell[BoxData[
    "*)"}], "\[IndentingNewLine]", 
   RowBox[{
    RowBox[{
-    RowBox[{"B1P", "=", 
+    RowBox[{"B1PA", "=", 
      RowBox[{"{", 
       RowBox[{
        RowBox[{"BbarP", "[", 
@@ -7805,21 +7806,21 @@ Cell[BoxData[
          RowBox[{"[", "1", "]"}], "]"}]}], ",", " ", "0"}], "}"}]}], ";"}], 
    "\[IndentingNewLine]", 
    RowBox[{
-    RowBox[{"B1", "=", 
+    RowBox[{"B1A", "=", 
      RowBox[{
       RowBox[{
        RowBox[{"RotationZY", "[", 
-        RowBox[{"\[Phi]p", ",", " ", "\[Theta]p"}], "]"}], ".", "B1P"}], "//",
+        RowBox[{"\[Phi]p", ",", " ", "\[Theta]p"}], "]"}], ".", "B1PA"}], "//",
        "FullSimplify"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{"Print", "[", 
     RowBox[{
-    "\"\<Expression of induced magnetic field: \>\"", ",", " ", "B1"}], 
+    "\"\<Expression of induced magnetic field: \>\"", ",", " ", "B1A"}], 
     "]"}]}]}]], "Input",
  CellChangeTimes->{{3.936312555661708*^9, 3.936312674184757*^9}, {
    3.936312792581178*^9, 3.9363127963041573`*^9}, {3.936313333344952*^9, 
    3.936313348110962*^9}, 3.936927178931978*^9, {3.936952194360289*^9, 
-   3.936952200801525*^9}},
- CellLabel->"In[15]:=",ExpressionUUID->"2a9bc0f5-df99-45a0-8898-032c18ccd6fa"],
+   3.936952200801525*^9}, {3.936964856725597*^9, 3.936964861441675*^9}},
+ CellLabel->"In[9]:=",ExpressionUUID->"2a9bc0f5-df99-45a0-8898-032c18ccd6fa"],
 
 Cell[BoxData[
  InterpretationBox[
@@ -7866,10 +7867,10 @@ Cell[BoxData[
    3.936926778265457*^9, 3.9369271892113533`*^9, 3.9369394314467907`*^9, 
    3.936940194121851*^9, 3.936940821657651*^9, 3.936940949380744*^9, 
    3.936946186686716*^9, 3.9369489583127337`*^9, 3.936949906848726*^9, 
-   3.936952025608086*^9, 3.9369545047444067`*^9},
+   3.936952025608086*^9, 3.9369545047444067`*^9, 3.936964886314907*^9},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[15]:=",ExpressionUUID->"2ab4e273-3762-4552-94b5-\
-971ea17e76c7"]
+  "\:8a08\:7b97\:4e2d\:ff1aIn[9]:=",ExpressionUUID->"06a8980b-7b94-4f00-94f4-\
+1278a86838c3"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -7897,7 +7898,7 @@ Cell[BoxData[
         RowBox[{"Pi", "/", "2"}]}], "]"}], ".", "epsilonPlus"}]}], ";"}], 
    "\[IndentingNewLine]", 
    RowBox[{
-    RowBox[{"B1P", "=", 
+    RowBox[{"B1PD", "=", 
      RowBox[{"{", 
       RowBox[{
        RowBox[{"epsilonPlusP", "[", 
@@ -7907,20 +7908,21 @@ Cell[BoxData[
          RowBox[{"[", "1", "]"}], "]"}]}], ",", " ", "0"}], "}"}]}], ";"}], 
    "\[IndentingNewLine]", 
    RowBox[{
-    RowBox[{"B1", "=", 
+    RowBox[{"B1D", "=", 
      RowBox[{
       RowBox[{
        RowBox[{"RotationZY", "[", 
         RowBox[{"\[Phi]p", ",", " ", 
-         RowBox[{"Pi", "/", "2"}]}], "]"}], ".", "B1P"}], "//", 
+         RowBox[{"Pi", "/", "2"}]}], "]"}], ".", "B1PD"}], "//", 
       "FullSimplify"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{"Print", "[", 
     RowBox[{
-    "\"\<Expression of induced magnetic field: \>\"", ",", " ", "B1"}], 
+    "\"\<Expression of induced magnetic field: \>\"", ",", " ", "B1D"}], 
     "]"}]}]}]], "Input",
  CellChangeTimes->{{3.9369520264479933`*^9, 3.936952253375724*^9}, {
-  3.936952393752874*^9, 3.936952408244971*^9}},
- CellLabel->"In[25]:=",ExpressionUUID->"53557bac-6f82-4bf4-8a56-2c73b9361d98"],
+  3.936952393752874*^9, 3.936952408244971*^9}, {3.93696486425978*^9, 
+  3.936964870227668*^9}},
+ CellLabel->"In[12]:=",ExpressionUUID->"53557bac-6f82-4bf4-8a56-2c73b9361d98"],
 
 Cell[BoxData[
  InterpretationBox[
@@ -7941,11 +7943,11 @@ Cell[BoxData[
      Sin[$CellContext`\[Phi]p])}],
   Editable->False]], "Print",
  CellChangeTimes->{
-  3.9369524086581903`*^9, {3.93695449502553*^9, 3.9369545064481707`*^9}, 
-   3.936954578783589*^9},
+  3.93695240865819*^9, {3.93695449502553*^9, 3.9369545064481707`*^9}, 
+   3.936954578783589*^9, 3.9369648878556347`*^9},
  CellLabel->
-  "\:8a08\:7b97\:4e2d\:ff1aIn[25]:=",ExpressionUUID->"87b70dc6-4048-4a5f-b1c5-\
-33eb41c1b88e"]
+  "\:8a08\:7b97\:4e2d\:ff1aIn[12]:=",ExpressionUUID->"c71f844c-8b41-4eaf-b90e-\
+173c76e5ec40"]
 }, Open  ]]
 },
 WindowSize->{1440, 770},
@@ -8192,21 +8194,21 @@ Cell[327252, 7522, 597, 13, 24, "Print",ExpressionUUID->"55711288-bace-40b9-b6bd
 Cell[CellGroupData[{
 Cell[327898, 7541, 3196, 82, 314, "Input",ExpressionUUID->"0089195e-98ed-4268-ba41-f184f5b43ea5"],
 Cell[CellGroupData[{
-Cell[331119, 7627, 1992, 47, 24, "Print",ExpressionUUID->"1341f1b0-6d38-4a15-b621-658cb274719f"],
-Cell[333114, 7676, 2006, 47, 24, "Print",ExpressionUUID->"59df45a3-aae7-4021-9993-1a1182490e02"]
+Cell[331119, 7627, 2016, 47, 24, "Print",ExpressionUUID->"f1a823b2-43bb-4d13-84f1-20213a12fb15"],
+Cell[333138, 7676, 2026, 47, 24, "Print",ExpressionUUID->"4019b59d-9372-45a5-bdd6-f6638c44a3f3"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[335169, 7729, 849, 21, 73, "Input",ExpressionUUID->"ee31c98f-b8a3-48a7-8274-9612a7b192c2"],
-Cell[336021, 7752, 1429, 32, 34, "Output",ExpressionUUID->"4b0e33e9-4878-42a3-bc10-97ed115ac1f7"]
+Cell[335213, 7729, 848, 21, 73, "Input",ExpressionUUID->"ee31c98f-b8a3-48a7-8274-9612a7b192c2"],
+Cell[336064, 7752, 1451, 33, 34, "Output",ExpressionUUID->"d48422c1-90ed-4bee-b7d1-c73c2daf56aa"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[337487, 7789, 1174, 32, 122, "Input",ExpressionUUID->"2a9bc0f5-df99-45a0-8898-032c18ccd6fa"],
-Cell[338664, 7823, 2052, 48, 24, "Print",ExpressionUUID->"2ab4e273-3762-4552-94b5-971ea17e76c7"]
+Cell[337552, 7790, 1223, 32, 122, "Input",ExpressionUUID->"2a9bc0f5-df99-45a0-8898-032c18ccd6fa"],
+Cell[338778, 7824, 2073, 48, 24, "Print",ExpressionUUID->"06a8980b-7b94-4f00-94f4-1278a86838c3"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[340753, 7876, 1603, 46, 194, "Input",ExpressionUUID->"53557bac-6f82-4bf4-8a56-2c73b9361d98"],
-Cell[342359, 7924, 825, 23, 44, "Print",ExpressionUUID->"87b70dc6-4048-4a5f-b1c5-33eb41c1b88e"]
+Cell[340888, 7877, 1655, 47, 194, "Input",ExpressionUUID->"53557bac-6f82-4bf4-8a56-2c73b9361d98"],
+Cell[342546, 7926, 846, 23, 44, "Print",ExpressionUUID->"c71f844c-8b41-4eaf-b90e-173c76e5ec40"]
 }, Open  ]]
 }
 ]
