@@ -95,15 +95,14 @@ def gen_params(potential_type):
     if potential_type == "sech":
         f = 1e19
         m_a = 1e-5
-
-        return f, m_a
+        m_D = 1e-22
 
     elif potential_type == "flat":
         f = 1e26
         m_a = 1e-22
         m_D = 1e-22
 
-        return f, m_a, m_D
+    return f, m_a, m_D
 
 # Calculate the energy density at the center of the soliton
 def calculate_rho0(m):
@@ -189,19 +188,26 @@ def calculate_gac(potential_type, f):
 def calculate_I(r_p, r_cutoff, omega):
     """
     Args:
-        r_p (float): Distance of measurement point from Galactic Centre.
+        r_p (array-like or float): Distance(s) of measurement point(s) from Galactic Centre.
         r_cutoff (float): Cutoff radius.
         omega (float): Oscillation frequency.
 
     Returns:
-        float: Integral.
+        array or float: Integral(s).
     """
+    # Convert r_p to a NumPy array for element-wise operations
+    r_p = np.asarray(r_p, dtype=np.float64)
+
+    # Initialize the output array
+    I = np.zeros_like(r_p, dtype=complex)
 
     # Calculate the integral based on the cutoff radius
-    if r_p > r_cutoff:
-        I = (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3)
-    else:
-        I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
+    greater = r_p > r_cutoff
+    I = np.where(
+        greater,
+        (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3),
+        (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
+    )
 
     return I
 
@@ -273,7 +279,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
         B1_z = np.real(B1_z_complex)
         B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
 
-        return np.array([B1, B1_x, B1_y, B1_z])
+        return np.array([B1, B1_x_complex, B1_y_complex, B1_z_complex])
 
 # Calculate the Landé g-factor
 def calculate_g_j(g_e, l, s, j):
@@ -463,19 +469,25 @@ def plot_data(xs, yss, plotlabels, xlabel, ylabel, title, figure_name, xlog=Fals
     plt.show()
 
 # Format ticks for logarithmic plots
-def log_tick_formatter(value, position=None):
+def log_tick_formatter(value, position=None, logdp=0):
     """
     Args:
         value (float): The tick value to format, representing the exponent in a logarithmic scale.
         position (int, optional): The tick position.
+        logdp (int, optional): Number of decimal places to display.
 
     Returns:
         str: A formatted string representing the tick value as a power of 10, e.g., "$10^{2}$" for a value of 2.
     """
-    return f"$10^{{{int(value)}}}$"
+
+    if logdp == 0:
+        return f"$10^{{{int(value)}}}$"
+    
+    else:
+        return f"$10^{{{value:.{logdp}f}}}$"
 
 # Plot the 2D data
-def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyle="contourf", xlog=False, ylog=False, zlog=False, save=False):
+def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyle="contourf", levels=None, xlog=False, ylog=False, zlog=False, logdp=0, save=False):
     """
     Args:
         xs (array): x-coordinates of the data points.
@@ -490,6 +502,7 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
         xlog (bool, optional): Set the x-axis to logarithmic scale. Defaults to False.
         ylog (bool, optional): Set the y-axis to logarithmic scale. Defaults to False.
         zlog (bool, optional): Set the z-axis to logarithmic scale. Defaults to False.
+        logdp (int, optional): Number of decimal places to display. Defaults to 0.
         save (bool, optional): Whether to save the plot. Defaults to False.
     """
 
@@ -498,7 +511,10 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
         fig, ax = plt.subplots(figsize=(8, 6))
 
         # Create a filled contour plot
-        contour = ax.contourf(xs, ys, zs, cmap="viridis")
+        if levels:
+            contour = ax.contourf(xs, ys, zs, levels=levels,cmap="viridis")
+        else:
+            contour = ax.contourf(xs, ys, zs, cmap="viridis")
 
         # Display the colour bar
         cbar = fig.colorbar(contour, ax=ax, orientation="vertical", fraction=0.046, pad=0.04)
@@ -506,18 +522,44 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
 
         # Configure the axes for logarithmic scaling if specified
         if xlog:
-            ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-            ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+            ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+            ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
         if ylog:
-            ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-            ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
-        if zlog:  # Assuming z-values are represented in the color bar
-            cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-            cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+            ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
+        if zlog: # Assuming z-values are represented in the color bar
+            cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+            cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
 
         # Set the axes labels and title
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
+        ax.set_title(title)
+
+    elif plotstyle == "contourf-polar":
+        # Create a figure and polar axes
+        fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={"projection": "polar"})
+
+        # Create a polar contour plot
+        if levels:
+            contour = ax.contourf(xs, ys, zs, levels=levels, cmap="viridis")
+        else:
+            contour = ax.contourf(xs, ys, cmap="viridis")
+
+        # Display the colour bar
+        cbar = fig.colorbar(contour, ax=ax, orientation="vertical", fraction=0.046, pad=0.04)
+        cbar.set_label(zlabel) # Set the label for the colour bar
+
+        # Set phi ticks in radians
+        ax.set_xticks(np.linspace(0, 2 * np.pi, num=8, endpoint=False))
+        ax.set_xticklabels([f"{phi:.2f}" for phi in np.linspace(0, 2 * np.pi, num=8, endpoint=False)])
+
+        # Configure the axes for logarithmic scaling if specified
+        if zlog: # Assuming z-values are represented in the colour bar
+            cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+            cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
+
+        # Set the title for the polar plot
         ax.set_title(title)
 
     elif plotstyle == "3D":
@@ -533,18 +575,18 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
 
         # Configure the axes for logarithmic scaling if specified
         if xlog:
-            ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-            ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+            ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+            ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
         if ylog:
-            ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-            ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+            ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
         if zlog:
-            ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-            ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+            ax.zaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+            ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
 
             # Set tick formatter for the colour bar
-            cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))  # Assuming z-values are represented in the color bar
-            cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+            cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))  # Assuming z-values are represented in the color bar
+            cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
 
         # Set the axes labels and title
         ax.set_xlabel(xlabel)
@@ -564,7 +606,7 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
     plt.show()
 
 # Plots the 3D data
-def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_name, xlog=False, ylog=False, zlog=False, cmap_name="plasma_r", alpha=0.7, s=20, save=False):
+def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_name, xlog=False, ylog=False, zlog=False, logdp=0, cmap_name="plasma_r", alpha=0.7, s=20, save=False):
     """
     Args:
         xs (array): x-coordinates of the data points.
@@ -580,6 +622,7 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
         xlog (bool, optional): Set the x-axis to logarithmic scale. Defaults to False.
         ylog (bool, optional): Set the y-axis to logarithmic scale. Defaults to False.
         zlog (bool, optional): Set the z-axis to logarithmic scale. Defaults to False.
+        logdp (int, optional): Number of decimal places to display. Defaults to 0.
         cmap_name (str, optional): Name of the colour map to use. Defaults to "plasma".
         alpha (float, optional): Transparency of the markers. Defaults to 0.7.
         s (int, optional): Size of the markers. Defaults to 20.
@@ -608,14 +651,14 @@ def plot3D_data(xs, ys, zs, ws, xlabel, ylabel, zlabel, wlabel, title, figure_na
 
     # Set major tick formatter and locator for the axes
     if xlog:
-        ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-        ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
     if ylog:
-        ax.yaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-        ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
     if zlog:
-        ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
-        ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        ax.zaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
+        ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
 
     # Adjust the spacing
     plt.tight_layout()
@@ -685,10 +728,7 @@ def main():
     print(f"The magnitude of background magnetic field is {B_bar * T_to_eV2:.2e}eV^2.")
 
     # Set parameters based on potential type
-    if potential_type == "sech":
-        f, m_a = gen_params(potential_type)
-    elif potential_type == "flat":
-        f, m_a, m_D = gen_params(potential_type)
+    f, m_a, m_D = gen_params(potential_type)
 
     # Coupling strength
     g_ac = calculate_gac(potential_type, f) # Axion-photon coupling strength
@@ -720,6 +760,15 @@ def main():
         plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
         plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
+    # Polar coordinate plane
+    r_ps = np.linspace(0 * r_c, 8000 * pc_to_m * m_to_eVminus1, 2000)
+    phi_ps = np.linspace(0, 2 * pi, 2000)
+    r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
+    B1polar_d = np.abs(calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_ps, pi / 2, phi_ps, B_bar)[3])
+ 
+    # Plot B1 versus distance of measurement point from Galactic Centre (r_p) and phi_p
+    plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d / 1e-4), r"$r_p/\mathrm{kpc}$", r"$\phi$ (rad)", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
+
     # Calculate the period of oscillation
     period = 2 * pi / omega / s_to_eVminus1
     print(f"Period: {round(period / year, 2)}yr.")
@@ -748,7 +797,7 @@ def main():
     E_hf_triplet = calculate_E_hf("triplet") # Hyperfine energy of triplet
     E_hf_singlet = calculate_E_hf("singlet") # Hyperfine energy of singlet
 
-    # Plot B1 values versus time
+    # Plot B1 versus time
     plot_data(ts, B1s / 1e-4, None, r"$t$ (s)", r"$|\vec{B}_{1}|$ (G)", r"$|\vec{B}_{1}|$ versus $t$", f"B1vstime{lower_rspace(potential_type)}{lower_rspace(particle_type)}m{m}.png", save=True)
 
     # Plot frequency shift versus time
@@ -756,7 +805,7 @@ def main():
 
     plot_radial = False
     if plot_radial:
-        # Plot B1 versus distance of measurement point from Galactic Centre (r_p)
+        # Plot B1 versus r_p
         r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
         r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
         f, m_a, m_D = gen_params("flat")
