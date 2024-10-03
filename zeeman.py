@@ -720,12 +720,6 @@ def main():
         plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
         plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
-    r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
-    phi_ps = np.linspace(0, 2 * pi, 10000)
-    r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
-    B1polar_d = calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_ps, pi / 2, phi_ps, B_bar)[0]
-    print(B1polar_d)
-
     # Calculate the period of oscillation
     period = 2 * pi / omega / s_to_eVminus1
     print(f"Period: {round(period / year, 2)}yr.")
