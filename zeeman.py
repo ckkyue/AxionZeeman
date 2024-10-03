@@ -169,6 +169,26 @@ def calculate_gac(potential_type, f):
         
     return g_ac
 
+# Calculate the integral
+def calculate_I(r_p, r_cutoff, omega):
+    """
+    Args:
+        r_p (float): Distance of measurement point from Galactic Centre.
+        r_cutoff (float): Cutoff radius.
+        omega (float): Oscillation frequency.
+
+    Returns:
+        float: Integral.
+    """
+
+    # Calculate the integral based on the cutoff radius
+    if r_p > r_cutoff:
+        I = (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3)
+    else:
+        I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
+
+    return I
+
 # Calculate the magnitude of magnetic field
 def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, real=True):
     """
@@ -178,9 +198,9 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, re
         t (float): Time.
         m (float): Particle mass.
         f (float): Energy scale of axion.
-        epsilon (float): Photon-dark photon coupling strength
-        r_p (float): Distance of measurement point from Galactic Centre
-        B_bar (float): Magnitude of the background magnetic field 
+        epsilon (float): Photon-dark photon coupling strength.
+        r_p (float): Distance of measurement point from Galactic Centre.
+        B_bar (float): Magnitude of the background magnetic field.
         real (bool, optional): Whether to take the real parts of the magnetic field components. Defaults to True.
 
     Returns:
@@ -225,10 +245,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, re
             coeff = epsilon * m**2 * A0 # Coefficient for dark photon
         
         # Calculate the integral based on the cutoff radius
-        if r_p > r_cutoff:
-            I = (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3)
-        else:
-            I = (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
+        I = calculate_I(r_p, r_cutoff, omega)
 
         # Compute magnitudes of B1 components
         if real:
@@ -750,6 +767,10 @@ def main():
     
     # Restrict the radial range for plotting
     plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}res.png", save=True)
+
+    # Create a grid of r_p and phi_p values
+    phi_ps = np.linspace(0, 2 * np.pi, 10000) # Angle from 0 to 2π
+    r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
     
     # Plot the soliton profile for flat potential and axion
     if potential_type == "flat" and particle_type == "axion":
