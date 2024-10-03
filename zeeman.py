@@ -190,7 +190,7 @@ def calculate_I(r_p, r_cutoff, omega):
     return I
 
 # Calculate the magnitude of magnetic field
-def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, real=True):
+def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, phi_p, B_bar):
     """
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
@@ -200,6 +200,8 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, re
         f (float): Energy scale of axion.
         epsilon (float): Photon-dark photon coupling strength.
         r_p (float): Distance of measurement point from Galactic Centre.
+        theta_p (float): theta displacement of the measurement point.
+        phi_p (float): phi displacement of the measurement point.
         B_bar (float): Magnitude of the background magnetic field.
         real (bool, optional): Whether to take the real parts of the magnetic field components. Defaults to True.
 
@@ -237,34 +239,24 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, B_bar, re
             g_ac = calculate_gac(potential_type, f) # Calculate the axion-photon coupling strength
             omega = m
             B_bar_x, B_bar_y, B_bar_z = 0, B_bar, 0 # Decompose B_bar into Cartesian components
-            coeff = omega * g_ac * phi0 # Coefficient for axion
+            coeff = - j * omega * g_ac * phi0 # Coefficient for axion
 
         elif particle_type == "dark photon":
             omega = m - mu
-            B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field representing the circular polarization vector
+            B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field representing the circular polarisation vector
             coeff = epsilon * m**2 * A0 # Coefficient for dark photon
         
         # Calculate the integral based on the cutoff radius
         I = calculate_I(r_p, r_cutoff, omega)
 
         # Compute magnitudes of B1 components
-        if real:
-            B1_x_complex = coeff * np.exp(- j * omega * t) * B_bar_y * I
-            B1_y_complex = coeff * np.exp(- j * omega * t) * - B_bar_x * I
-            B1_z_complex = 0 # No contribution in the z direction
-            B1_x = np.real(B1_x_complex)
-            B1_y = np.real(B1_y_complex)
-            B1_z = np.real(B1_z_complex)
-            B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
-
-        else:
-            B1_x_complex = coeff * B_bar_y * I
-            B1_y_complex = coeff * - B_bar_x * I
-            B1_z_complex = 0 # No contribution in the z direction
-            B1_x = np.abs(B1_x_complex)
-            B1_y = np.abs(B1_y_complex)
-            B1_z = np.abs(B1_z_complex)
-            B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
+        B1_x_complex = coeff * np.exp(- j * omega * t) * I * (np.cos(theta_p) * B_bar_y - np.sin(theta_p) * np.sin(phi_p) * B_bar_z)
+        B1_y_complex = coeff * np.exp(- j * omega * t) * I * (- np.cos(theta_p) * B_bar_x + np.sin(theta_p) * np.cos(phi_p) * B_bar_z)
+        B1_z_complex = coeff * np.exp(- j * omega * t) * I * np.sin(theta_p) * (np.sin(phi_p) * B_bar_x - np.cos(phi_p) * B_bar_y)
+        B1_x = np.real(B1_x_complex)
+        B1_y = np.real(B1_y_complex)
+        B1_z = np.real(B1_z_complex)
+        B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
 
         return B1
 
@@ -670,7 +662,7 @@ def main():
     print(f"The magnitude of internal magnetic field is roughly {B_int:.2f}T.")
 
     # Specify the potential and particle types
-    potential_type = "flat" # sech or flat
+    potential_type = "sech" # sech or flat
     particle_type = "axion" # axion or dark photon
 
     # Background magnetic field (T)
@@ -697,8 +689,8 @@ def main():
     elif particle_type == "dark photon":
         m, omega = m_D, m_D - mu
 
-    params = False
-    if params:
+    plot_params = False
+    if plot_params:
         # Parameter space
         m_as = np.logspace(-22, -18, 2000)
         m_Ds = np.logspace(-22, -18, 2000)
@@ -706,8 +698,8 @@ def main():
         epsilons = np.logspace(-5, -3, 2000)
         m_as, fs = np.meshgrid(m_as, fs)
         m_Ds, epsilons = np.meshgrid(m_Ds, epsilons)
-        B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
-        B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, B_bar, real=False)
+        B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, 0, 0, B_bar)
+        B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, 0, 0, B_bar)
 
         # Plot B1 versus the parameter space
         plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
@@ -721,7 +713,7 @@ def main():
     ts = np.linspace(0, 4 * period, 1000)
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, B_bar) for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, 0, 0, B_bar) for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
@@ -747,26 +739,28 @@ def main():
     # Plot frequency shift versus time
     plot_data(ts, delta_nus, None, r"$t$ (s)", r"$\Delta\nu$ (Hz)", r"$\Delta\nu$ versus $t$", f"Deltanuvstime{lower_rspace(potential_type)}{lower_rspace(particle_type)}m{m}.png", save=True)
 
-    # Plot B1 versus distance of measurement point from Galactic Centre (r_p)
-    r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
-    r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
-    f, m_a, m_D = gen_params("flat")
-    B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
-    B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps])
-    B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
-    B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, B_bar, real=False) for r_p in r_ps_res])
+    plot_radial = False
+    if plot_radial:
+        # Plot B1 versus distance of measurement point from Galactic Centre (r_p)
+        r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
+        r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
+        f, m_a, m_D = gen_params("flat")
+        B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps])
+        B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps])
+        B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps_res])
+        B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar) for r_p in r_ps_res])
 
-    # Plot B1 versus r_p for axion
-    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
-    
-    # Restrict the radial range for plotting
-    plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}res.png", save=True)
-    
-    # Plot B1 versus r_p for dark photon
-    plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}.png", xlog=True, save=True)
-    
-    # Restrict the radial range for plotting
-    plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}res.png", save=True)
+        # Plot B1 versus r_p for axion
+        plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
+        
+        # Restrict the radial range for plotting
+        plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}res.png", save=True)
+        
+        # Plot B1 versus r_p for dark photon
+        plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}.png", xlog=True, save=True)
+        
+        # Restrict the radial range for plotting
+        plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}res.png", save=True)
 
     # Create a grid of r_p and phi_p values
     phi_ps = np.linspace(0, 2 * np.pi, 10000) # Angle from 0 to 2π
