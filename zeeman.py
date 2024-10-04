@@ -550,18 +550,19 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
         cbar = fig.colorbar(contour, ax=ax, orientation="vertical", fraction=0.046, pad=0.04)
         cbar.set_label(zlabel) # Set the label for the colour bar
 
-        # Set phi ticks in radians (units of pi)
-        xticks = [0, 1 / 2 * np.pi, np.pi, 3 / 2 * np.pi]
-        ax.set_xticks(xticks)
-
         # Configure the axes for logarithmic scaling if specified
         if zlog: # Assuming z-values are represented in the colour bar
             cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
             cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
 
+        # Set phi ticks in radians (units of pi)
+        xticks = [0, 1 / 2 * np.pi, np.pi, 3 / 2 * np.pi]
+        ax.set_xticks(xticks)
+
         # Set the axes labels and titles
         xticklabels = ["0", r"$\frac{1}{2}\pi$", r"$\pi$", r"$\frac{3}{2}\pi$"]
         ax.set_xticklabels(xticklabels, fontsize=14)
+        ax.set_rlabel_position(45)
         ax.text(np.pi / 4, np.max(ys) + 1, ylabel, fontsize=14, ha="center", va="center")
         ax.set_title(title)
 
