@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 import os
-from scipy.constants import alpha, epsilon_0, h, hbar, G, m_e, m_p, pi, physical_constants, year
+from scipy.constants import alpha, epsilon_0, h, hbar, G, m_e, m_p, physical_constants, year
 
 # Define the imaginary unit
 j = 1j
@@ -19,12 +19,12 @@ e_au = physical_constants["atomic unit of charge"][0]
 g_e = physical_constants["electron g factor"][0]
 g_p = physical_constants["proton g factor"][0]
 M_s = M_sun.value
-m_pl = (c * hbar / (8 * pi * G))**(1 / 2) * c**2 / e_au # Reduced Planck mass (eV)
+m_pl = (c * hbar / (8 * np.pi * G))**(1 / 2) * c**2 / e_au # Reduced Planck mass (eV)
 mu_B = physical_constants["Bohr magneton"][0]
 r_e = physical_constants["Bohr radius"][0]
 
 # Conversion factors
-C_to_eV = (4 * pi * alpha)**(1 / 2) / e_au
+C_to_eV = (4 * np.pi * alpha)**(1 / 2) / e_au
 kg_to_eV = c**2 / e_au
 m_to_eVminus1 = e_au / h / c
 J_to_eV = 1 / e_au
@@ -180,7 +180,7 @@ def calculate_gac(potential_type, f):
         g_ac = 0.66e-19
 
     elif potential_type == "flat":
-        g_ac = alpha / pi / f
+        g_ac = alpha / np.pi / f
         
     return g_ac
 
@@ -238,7 +238,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
         R = 2 / m # Radius of axion star
 
         # Calculate B1
-        B1 = B_bar / r_p * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * pi**2 * R**2 * np.tanh(pi * omega * R / 2) / np.cosh(pi * omega * R / 2)
+        B1 = B_bar / r_p * np.cos(- omega * t) * phi0 * g_ac * omega * 1 / 4 * np.pi**2 * R**2 * np.tanh(np.pi * omega * R / 2) / np.cosh(np.pi * omega * R / 2)
     
         return np.array([B1])
 
@@ -279,7 +279,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
         B1_z = np.real(B1_z_complex)
         B1 = np.sqrt(B1_x**2 + B1_y**2 + B1_z**2)
 
-        return np.array([B1, B1_x_complex, B1_y_complex, B1_z_complex])
+        return np.array([B1, B1_x_complex, B1_y_complex, B1_z_complex], dtype=complex)
 
 # Calculate the Landé g-factor
 def calculate_g_j(g_e, l, s, j):
@@ -550,16 +550,19 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
         cbar = fig.colorbar(contour, ax=ax, orientation="vertical", fraction=0.046, pad=0.04)
         cbar.set_label(zlabel) # Set the label for the colour bar
 
-        # Set phi ticks in radians
-        ax.set_xticks(np.linspace(0, 2 * np.pi, num=8, endpoint=False))
-        ax.set_xticklabels([f"{phi:.2f}" for phi in np.linspace(0, 2 * np.pi, num=8, endpoint=False)])
+        # Set phi ticks in radians (units of pi)
+        xticks = [0, 1 / 2 * np.pi, np.pi, 3 / 2 * np.pi]
+        ax.set_xticks(xticks)
 
         # Configure the axes for logarithmic scaling if specified
         if zlog: # Assuming z-values are represented in the colour bar
             cbar.ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda value, position: log_tick_formatter(value, position, logdp)))
             cbar.ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=(logdp == 0)))
 
-        # Set the title for the polar plot
+        # Set the axes labels and titles
+        xticklabels = ["0", r"$\frac{1}{2}\pi$", r"$\pi$", r"$\frac{3}{2}\pi$"]
+        ax.set_xticklabels(xticklabels, fontsize=14)
+        ax.text(np.pi / 4, np.max(ys) + 1, ylabel, fontsize=14, ha="center", va="center")
         ax.set_title(title)
 
     elif plotstyle == "3D":
@@ -716,7 +719,7 @@ def main():
     print(f"The distance of L1544 from Galactic Centre is {r_p:.2e}eV^-1.")
 
     # Calculate the internal magnetic field of a hydrogen atom
-    B_int = 1 / (4 * pi * epsilon_0) * e_au / (m_e * c**2 * r_e**3) * hbar
+    B_int = 1 / (4 * np.pi * epsilon_0) * e_au / (m_e * c**2 * r_e**3) * hbar
     print(f"The magnitude of internal magnetic field is roughly {B_int:.2f}T.")
 
     # Specify the potential and particle types
@@ -762,22 +765,25 @@ def main():
 
     # Polar coordinate plane
     r_ps = np.linspace(0 * r_c, 8000 * pc_to_m * m_to_eVminus1, 2000)
-    phi_ps = np.linspace(0, 2 * pi, 2000)
+    phi_ps = np.linspace(0, 2 * np.pi, 2000)
     r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
-    B1polar_d = np.abs(calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_ps, pi / 2, phi_ps, B_bar)[3])
+    B1polar_d_mag, B1polar_d_x, B1polar_d_y, B1polar_d_z = calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_ps, np.pi / 2, phi_ps, B_bar)
+    B1polar_d_mag = np.real(B1polar_d_mag)
+    B1polar_d_theta = np.abs(- B1polar_d_z)
  
-    # Plot B1 versus distance of measurement point from Galactic Centre (r_p) and phi_p
-    plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d / 1e-4), r"$r_p/\mathrm{kpc}$", r"$\phi$ (rad)", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
+    # Plot B1 versus distance of measurement point from Galactic Centre (r_p) and phi_ps
+    plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_mag / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
+    plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_theta / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1\theta, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1\theta, \vec{A}'}|$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
 
     # Calculate the period of oscillation
-    period = 2 * pi / omega / s_to_eVminus1
+    period = 2 * np.pi / omega / s_to_eVminus1
     print(f"Period: {round(period / year, 2)}yr.")
 
     # Define the time range
     ts = np.linspace(0, 4 * period, 1000)
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, 0, 0, B_bar)[0] for t in ts])
+    B1s = np.array([np.real(calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, 0, 0, B_bar)[0]) for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
@@ -809,10 +815,10 @@ def main():
         r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
         r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
         f, m_a, m_D = gen_params("flat")
-        B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps])
-        B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps])
-        B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps_res])
-        B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps_res])
+        B1r_ps_a = np.array([np.real(calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0]) for r_p in r_ps])
+        B1r_ps_d = np.array([np.real(calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar)[0]) for r_p in r_ps])
+        B1r_ps_a_res = np.array([np.real(calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0]) for r_p in r_ps_res])
+        B1r_ps_d_res = np.array([np.real(calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, 0, 0, B_bar)[0]) for r_p in r_ps_res])
 
         # Plot B1 versus r_p for axion
         plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
