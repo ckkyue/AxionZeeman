@@ -729,7 +729,7 @@ def main():
 
     # Specify the potential and particle types
     potential_type = "flat" # sech or flat
-    particle_type = "dark photon" # axion or dark photon
+    particle_type = "axion" # axion or dark photon
 
     # Background magnetic field (T)
     B_bar = 1e-10
@@ -774,11 +774,13 @@ def main():
         r_ps = np.linspace(0 * r_c, 8000 * pc_to_m * m_to_eVminus1, 2000)
         phi_ps = np.linspace(0, 2 * np.pi, 2000)
         r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
+        B1polar_a_mag, B1polar_a_x, B1polar_a_y, B1polar_a_z = calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_ps, 0, phi_ps, B_bar)
         B1polar_d_mag, B1polar_d_x, B1polar_d_y, B1polar_d_z = calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_ps, np.pi / 2, phi_ps, B_bar)
         B1polar_d_mag = B1polar_d_mag
         B1polar_d_theta = - B1polar_d_z
     
         # Plot B1 versus distance of measurement point from Galactic Centre (r_p) and azimuthal displacement (phi_p)
+        plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_a_mag) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Polar plot of $|\vec{B}_{1, a}|$", "B1polaraxion.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_mag / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_d_theta) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1\theta, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1\theta, \vec{A}'}|$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
 
