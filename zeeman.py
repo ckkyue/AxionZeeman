@@ -548,7 +548,7 @@ def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyl
         if levels:
             contour = ax.contourf(xs, ys, zs, levels=levels, cmap="viridis")
         else:
-            contour = ax.contourf(xs, ys, cmap="viridis")
+            contour = ax.contourf(xs, ys, zs, cmap="viridis")
 
         # Display the colour bar
         cbar = fig.colorbar(contour, ax=ax, orientation="vertical", fraction=0.046, pad=0.04)
@@ -761,7 +761,7 @@ def main():
         epsilons = np.logspace(-5, -3, 2000)
         m_as, fs = np.meshgrid(m_as, fs)
         m_Ds, epsilons = np.meshgrid(m_Ds, epsilons)
-        B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, 0, 0, B_bar)[0]
+        B1params_a = calculate_B1("flat", "axion", 0, m_as, fs, epsilon, 8000 * pc_to_m * m_to_eVminus1, np.pi / 2, 0, B_bar)[0]
         B1params_d = calculate_B1("flat", "dark photon", 0, m_Ds, f, epsilons, 8000 * pc_to_m * m_to_eVminus1, np.pi / 2, 0, B_bar)[0]
 
         # Plot B1 versus the parameter space
@@ -774,13 +774,13 @@ def main():
         r_ps = np.linspace(0 * r_c, 8000 * pc_to_m * m_to_eVminus1, 2000)
         phi_ps = np.linspace(0, 2 * np.pi, 2000)
         r_ps, phi_ps = np.meshgrid(r_ps, phi_ps)
-        B1polar_a_mag, B1polar_a_x, B1polar_a_y, B1polar_a_z = calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_ps, 0, phi_ps, B_bar)
-        B1polar_d_mag, B1polar_d_x, B1polar_d_y, B1polar_d_z = calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_ps, np.pi / 2, phi_ps, B_bar)
+        B1polar_a_mag, B1polar_a_x, B1polar_a_y, B1polar_a_z = calculate_B1("flat", "axion", 0, 1e-22, f, epsilon, r_ps, np.pi / 2, phi_ps, B_bar)
+        B1polar_d_mag, B1polar_d_x, B1polar_d_y, B1polar_d_z = calculate_B1("flat", "dark photon", 0, 1e-22, f, epsilon, r_ps, np.pi / 2, phi_ps, B_bar)
         B1polar_d_mag = B1polar_d_mag
         B1polar_d_theta = - B1polar_d_z
     
         # Plot B1 versus distance of measurement point from Galactic Centre (r_p) and azimuthal displacement (phi_p)
-        plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_a_mag) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Polar plot of $|\vec{B}_{1, a}|$", "B1polaraxion.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
+        plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_a_mag) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Polar plot of $|\vec{B}_{1, a}|$", "B1polaraxion.png", plotstyle="contourf-polar", zlog=True, logdp=1, save=True)
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_mag / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_d_theta) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1\theta, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1\theta, \vec{A}'}|$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
 
@@ -790,9 +790,9 @@ def main():
         r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
         r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
         f, m_a, m_D = gen_params("flat")
-        B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps])
+        B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps])
         B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps])
-        B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, 0, 0, B_bar)[0] for r_p in r_ps_res])
+        B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps_res])
         B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps_res])
 
         # Plot B1 versus r_p for axion
@@ -815,7 +815,7 @@ def main():
     ts = np.linspace(0, 4 * period, 1000)
 
     # Calculate B1 values
-    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, 0, 0, B_bar)[0] for t in ts])
+    B1s = np.array([calculate_B1(potential_type, particle_type, t * s_to_eVminus1, m, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for t in ts])
 
     # Calculate the shift in energy for each B1
     delta_Es = np.array([calculate_delta_E(B1) for B1 in B1s])
