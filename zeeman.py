@@ -260,7 +260,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
             g_ac = calculate_gac(potential_type, f) # Calculate the axion-photon coupling strength
             omega = m
             B_bar_x, B_bar_y, B_bar_z = 0, B_bar, 0 # Decompose B_bar into Cartesian components
-            coeff = -j * omega * g_ac * phi0 # Coefficient for axion
+            coeff = - j * omega * g_ac * phi0 # Coefficient for axion
 
         elif particle_type == "dark photon":
             omega = m - mu
@@ -485,10 +485,18 @@ def log_tick_formatter(value, position=None, logdp=0):
     """
 
     if logdp == 0:
-        return f"$10^{{{int(value)}}}$"
+        if value < 0:
+            return f"$-10^{{{int(-value)}}}$"
+        
+        else:
+            return f"$10^{{{int(value)}}}$"
     
     else:
-        return f"$10^{{{value:.{logdp}f}}}$"
+        if value < 0:
+            return f"$-10^{{{-value:.{logdp}f}}}$"
+        
+        else:
+            return f"$10^{{{value:.{logdp}f}}}$"
 
 # Plot the 2D data
 def plot2D_data(xs, ys, zs, xlabel, ylabel, zlabel, title, figure_name, plotstyle="contourf", levels=None, xlog=False, ylog=False, zlog=False, logdp=0, save=False):
@@ -778,7 +786,7 @@ def main():
  
     # Plot B1 versus distance of measurement point from Galactic Centre (r_p) and azimuthal displacement (phi_p)
     plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_mag / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
-    plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_d_theta) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1\theta, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1\theta, \vec{A}'}|$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
+    plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.sign(B1polar_d_theta) * np.log10(np.abs(B1polar_d_theta) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$\vec{B}_{1\theta, \vec{A}'}$ (G)", r"Polar plot of $\vec{B}_{1\theta, \vec{A}'}$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
