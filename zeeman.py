@@ -752,7 +752,7 @@ def main():
     elif particle_type == "dark photon":
         m, omega = m_D, m_D - mu
 
-    plot_params = False
+    plot_params = True
     if plot_params:
         # Parameter space
         m_as = np.logspace(-22, -18, 2000)
@@ -784,7 +784,7 @@ def main():
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_mag / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_d_theta) / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1\theta, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1\theta, \vec{A}'}|$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
 
-    plot_radial = False
+    plot_radial = True
     if plot_radial:
         # Plot B1 versus r_p
         r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
