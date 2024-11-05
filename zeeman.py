@@ -26,7 +26,7 @@ r_e = physical_constants["Bohr radius"][0]
 # Conversion factors
 C_to_eV = (4 * np.pi * alpha)**(1 / 2) / e_au
 kg_to_eV = c**2 / e_au
-m_to_eVminus1 = e_au / h / c
+m_to_eVminus1 = e_au / hbar / c
 J_to_eV = 1 / e_au
 pc_to_m = u.pc.to(u.m)
 s_to_eVminus1 = e_au / hbar
