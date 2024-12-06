@@ -24,22 +24,13 @@ mu_B = physical_constants["Bohr magneton"][0]
 r_e = physical_constants["Bohr radius"][0]
 
 # Conversion factors
-C_to_eV = (4 * np.pi * alpha)**(1 / 2) / e_au
+CNu = (4 * np.pi * alpha)**(1 / 2) / e_au
 kg_to_eV = c**2 / e_au
 m_to_eVminus1 = e_au / hbar / c
 J_to_eV = 1 / e_au
 pc_to_m = u.pc.to(u.m)
 s_to_eVminus1 = e_au / hbar
-T_to_eV2 = kg_to_eV / C_to_eV / s_to_eVminus1
-
-# Parameters of L1544
-dist_l1544 = 140 * u.pc # Distance to L1544
-ra_l1544 = (5 * 15 + 4 / 4 + 17.21 / 240) * u.deg # Right ascension
-dec_l1544 = (25 + 10 / 60 + 42.8 / 3600) * u.deg # Declination
-
-# Create SkyCoord object for L1544 and convert to Cartesian
-coord_l1544 = SkyCoord(ra=ra_l1544, dec=dec_l1544, distance=dist_l1544)
-cart_l1544 = coord_l1544.cartesian
+T_to_eV2 = kg_to_eV / CNu / s_to_eVminus1
 
 # Parameters of Galactic Centre
 dist_gc = 8 * 1e3 * u.pc # Distance to Galactic Centre
@@ -49,9 +40,6 @@ b_gc = 0 * u.deg # Galactic latitude
 # Create SkyCoord object for Galactic Centre and convert to Cartesian
 coord_gc = SkyCoord(l=l_gc, b=b_gc, distance=dist_gc, frame="galactic")
 cart_gc = coord_gc.icrs.cartesian
-
-# Position vector from Galactic Centre to L1544
-cart_gctol1544 = cart_l1544 - cart_gc
 
 # Core radius (pc)
 r_c_pc = 180
@@ -105,10 +93,11 @@ def gen_params(potential_type):
     return f, m_a, m_D
 
 # Calculate the energy density at the centre of the soliton
-def calculate_rho0(m):
+def calculate_rho0(m, r_c_pc):
     """
     Args:
         m (float): Particle mass.
+        r_c_pc (float): Core radius of the soliton.
 
     Returns:
         float: Energy density at the centre of the soliton.
@@ -249,7 +238,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
         r_cutoff = cutoff_factor * r_c
         
         # Calculate the energy density at the centre of the soliton
-        rho0 = calculate_rho0(m)
+        rho0 = calculate_rho0(m, r_c_pc)
 
         # Calculate the axion field strength
         phi0 = calculate_phi(rho0, m)
@@ -712,16 +701,12 @@ def main():
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-    # Calculate the distance of L1544 from Galactic Centre (pc)
-    r_p_pc = np.linalg.norm(cart_gctol1544.xyz)
+    # Calculate the distance of Earth from Galactic Centre (pc)
+    r_p_pc = np.linalg.norm(cart_gc.xyz)
 
-    # Calculate the angle between the vector from Galactic Centre to L1544 and the vector to L1544
-    angle = np.arccos(np.dot(cart_gctol1544.xyz, cart_l1544.xyz) / (r_p_pc * np.linalg.norm(cart_l1544.xyz)))
-    print(f"The angle between the vector from Galactic Centre to L1544 and the vector to L1544 is {angle:.2e}.")
-
-    # Calculate distance of L1544 from Galactic Centre (eV^-1)
+    # Calculate distance of Earth from Galactic Centre (eV^-1)
     r_p = r_p_pc.value * pc_to_m * m_to_eVminus1
-    print(f"The distance of L1544 from Galactic Centre is {r_p:.2e}eV^-1.")
+    print(f"The distance of Earth from Galactic Centre is {r_p:.2e}eV^-1.")
 
     # Calculate the internal magnetic field of a hydrogen atom
     B_int = 1 / (4 * np.pi * epsilon_0) * e_au / (m_e * c**2 * r_e**3) * hbar
@@ -860,31 +845,23 @@ def main():
         zs_scaled = zs / r_c
 
         # Calculate the axion density profile
-        rho0 = calculate_rho0(m)
+        rho0 = calculate_rho0(m, r_c_pc)
         rhos = [calculate_rho(rho0, a, r, r_c) for r in rs]
         rhos_rc = [calculate_rho(rho0, a, r, r_c, step=True) for r in rs]
-        rhos_mod = [calculate_rho(rho0, a, r, r_c, cutoff_factor=np.sqrt((2**(1 / 4) - 1) / 0.091), step=True) for r in rs]
         rhos_3d = calculate_rho(rho0, a, np.sqrt(xs**2 + ys**2 + zs**2), r_c)
 
         # Calculate axion field strength from density
         phis = [calculate_phi(rho0, m_a) for rho0 in rhos]
         phis_rc = [calculate_phi(rho0, m_a) for rho0 in rhos_rc]
-        phis_mod = [calculate_phi(rho0, m_a) for rho0 in rhos_mod]
 
         # Plot axion density profile
         plot_data(rs_scaled, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
-
-        # Plot exact and approximate axion density profiles
-        plot_data(rs_scaled, [rhos, rhos_rc, rhos_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", "axionrhostep.png", save=True)
 
         # Plot axion density profile in 3D
         plot3D_data(xs_scaled, ys_scaled, zs_scaled, rhos_3d, r"$x/r_c$", r"$y/r_c$", r"$z/r_c$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile in 3D", "axionrho3d.png", save=True)
 
         # Plot axion field strength
         plot_data(rs_scaled, phis, None, r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphim{m_a}.png", save=True)
-
-        # Plot exact and approximate axion field strengths
-        plot_data(rs_scaled, [phis, phis_rc, phis_mod], ["Exact", r"Cutoff at $r_c$", r"Cutoff at $\sim 1.44r_c$"], r"$r/r_{c}$", r"$\varphi$ (eV)", "Axion field strength", f"axionphistep{m_a}.png", save=True)
 
 # Run the main program
 if __name__ == "__main__":
