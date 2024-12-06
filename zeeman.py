@@ -847,12 +847,10 @@ def main():
         # Calculate the axion density profile
         rho0 = calculate_rho0(m, r_c_pc)
         rhos = [calculate_rho(rho0, a, r, r_c) for r in rs]
-        rhos_rc = [calculate_rho(rho0, a, r, r_c, step=True) for r in rs]
         rhos_3d = calculate_rho(rho0, a, np.sqrt(xs**2 + ys**2 + zs**2), r_c)
 
         # Calculate axion field strength from density
         phis = [calculate_phi(rho0, m_a) for rho0 in rhos]
-        phis_rc = [calculate_phi(rho0, m_a) for rho0 in rhos_rc]
 
         # Plot axion density profile
         plot_data(rs_scaled, rhos, None, r"$r/r_{c}$", r"$\rho$ ($\mathrm{eV}^{4}$)", "Axion density profile", f"axionrho.png", save=True)
