@@ -48,9 +48,6 @@ r_c = r_c_pc * pc_to_m * m_to_eVminus1
 # Scaling constants of Tom's profile (arXiv: 1406.6586v1)
 a = (0.091 / r_c_pc**2) * (pc_to_m * m_to_eVminus1)**(-2) # Scaling constant of axion (eV^2)
 
-# Chemical potential of dark photon
-mu = 0
-
 # Convert the string to lowercase and remove all spaces
 def lower_rspace(string):
     """
@@ -109,7 +106,7 @@ def calculate_rho0(m, r_c_pc):
     return rho0
 
 # Calculate the density profile
-def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, step=False):
+def calculate_rho(rho0, a, r, r_c, cutoff_factor=1):
     """
     Args:
         rho0 (float): Energy density at the centre of the soliton.
@@ -117,7 +114,6 @@ def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, step=False):
         r (float): Distance from the centre of the soliton.
         r_c (float): Core radius of the soliton.
         cutoff_factor (float): Used for calculating the cutoff radius.
-        step (bool, optional): Whether to use a step function density profile. Defaults to False.
 
     Returns:
         float: Density at the given distance.
@@ -126,16 +122,19 @@ def calculate_rho(rho0, a, r, r_c, cutoff_factor=1, step=False):
     # Calculate the cutoff radius
     r_cutoff = cutoff_factor * r_c
 
-    if step:
-        if r <= r_cutoff:
+    # Convert r to a numpy array for element-wise operations
+    r = np.asarray(r, dtype=np.float64)
 
-            return rho0
-        
-        elif r > r_cutoff:
+    # Initialise the output array
+    rho = np.zeros_like(r, dtype=np.float64)
 
-            return 0
-    else:
-        rho = rho0 / (1 + a * r**2)**8
+    # Calculate the density
+    smaller = r <= r_cutoff
+    rho = np.where(
+        smaller, 
+        rho0 / (1 + a * r**2)**8, 
+        rho0 / (1 + a * r_cutoff**2)**8 * (r_cutoff / r)**3
+    )
 
     return rho
 
@@ -184,24 +183,40 @@ def calculate_I(r_p, r_cutoff, omega):
     Returns:
         array or float: Integral(s).
     """
-    # Convert r_p to a NumPy array for element-wise operations
+
+    # Convert r_p to a numpy array for element-wise operations
     r_p = np.asarray(r_p, dtype=np.float64)
 
-    # Initialize the output array
+    # Initialise the output array
     I = np.zeros_like(r_p, dtype=complex)
 
-    # Calculate the integral based on the cutoff radius
-    greater = r_p > r_cutoff
-    I = np.where(
-        greater,
-        (- 1 + j * r_p * omega) * (r_cutoff * omega * np.cos(r_cutoff * omega) - np.sin(r_cutoff * omega)) / (r_p**2 * omega**3),
-        (- 1 + j * r_cutoff * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (r_p**2 * omega**3)
-    )
+    # Calculate the core part
+    # I_core = (8 * j * a * np.exp(j * r_p * omega) * r_c**2 * np.sin(r_c * omega)) / ((1 + a * r_c**2)**6 * r_p * omega**2)
+    I_core = j * a * np.exp(j * r_p * omega) * (j + r_p * omega) * (r_c * (15 * a * (- 3 + a * r_c**2) * (- 1 + 3 * a * r_c**2) 
+            + 8 * (3 - 7 * a * r_c**2) * omega**2) * np.cos(r_c * omega) 
+            + omega * (- 9 + r_c**2 * (21 * a * (6 - 5 * a * r_c**2) + 8 * (1 + a * r_c**2) * omega**2)) * np.sin(r_c * omega)) / (r_p**2 * (omega + a * r_c**2 * omega)**6)
+    
+    # Calculate the tail part
+    # I_tail = - 3 * j * np.exp(j * r_p * omega) * np.sin(r_c * omega) / (2 * r_p * omega**2)
+
+    I_tail_1 = np.exp(- j * r_p * omega) * r_c**(3 / 2) * ((16 + 16 * j) * np.sqrt(2 * np.pi) * r_p**(11 / 2) * omega**(11 / 2) * (- j + r_p * omega) 
+                                                         + (16 + 16 * j) * np.exp(2 * j * r_p * omega) * np.sqrt(2 * np.pi) * r_p**(11 / 2) * omega**(11 / 2) * (j + r_p * omega) 
+                                                         + 3 * np.exp(3 * j * r_p * omega) * (j + r_p * omega) * (315 + 2 * r_p * omega * (35 * j + 2 * r_p * omega * (- 5 - 2 * j * r_p * omega))) 
+                                                         - 3 * np.exp(j * r_p * omega) * (315 * j + r_p * omega * (385 + 2 * r_p * omega * (- 45 * j + 2 * r_p * omega * (- 7 + 2 * r_p * omega * (j + 4 * r_p * omega)))))) / (64 * r_p**(15 / 2) * omega**7)
+    
+    I_tail_2 = 3 * np.exp(j * r_p * omega) * (1 - j * r_p * omega) * ((70 * r_c * omega - 8 * r_c**3 * omega**3) * np.cos(r_c * omega) + 
+                                                                  (315 - 20 * r_c**2 * omega**2 + 16 * r_c**4 * omega**4) * np.sin(r_c * omega)) / (32 * r_c**4 * r_p**2 * omega**7)
+    
+    I_tail_3 = - (1 + j) * np.sqrt(np.pi / 2) * (r_c / omega)**(3 / 2) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / r_p**2
+
+    I_tail = I_tail_1 + I_tail_2 + I_tail_3
+    
+    I = I_core + 1 / (1 + a * r_cutoff**2)**4 * I_tail
 
     return I
 
 # Calculate the magnitude of the magnetic field induced by the soliton
-def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, phi_p, B_bar):
+def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, phi_p, B_bar, cutoff_factor=1):
     """
     Args:
         potential_type (str): Type of potential ("sech" or "flat").
@@ -234,8 +249,8 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
     # Handle the "flat" potential case
     elif potential_type == "flat":
         # Parameters common to both axion and dark photon
-        cutoff_factor = np.sqrt((2**(1 / 4) - 1) / 0.091)
         r_cutoff = cutoff_factor * r_c
+        omega = m
         
         # Calculate the energy density at the centre of the soliton
         rho0 = calculate_rho0(m, r_c_pc)
@@ -247,12 +262,10 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
         # Set parameters based on the particle type
         if particle_type == "axion":
             g_ac = calculate_gac(potential_type, f) # Calculate the axion-photon coupling strength
-            omega = m
             B_bar_x, B_bar_y, B_bar_z = B_bar / np.sqrt(3), B_bar / np.sqrt(3), B_bar / np.sqrt(3) # Decompose B_bar into Cartesian components
             coeff = - j * omega * g_ac * phi0 # Coefficient for axion
 
         elif particle_type == "dark photon":
-            omega = m - mu
             B_bar_x, B_bar_y, B_bar_z = 1 / np.sqrt(2), j / np.sqrt(2), 0 # Pseudo-magnetic field for circular polarisation
             coeff = epsilon * m**2 * A0 # Coefficient for dark photon
         
@@ -736,9 +749,9 @@ def main():
     if particle_type == "axion":
         m, omega = m_a, m_a
     elif particle_type == "dark photon":
-        m, omega = m_D, m_D - mu
+        m, omega = m_D, m_D
 
-    plot_params = True
+    plot_params = False
     if plot_params:
         # Parameter space
         m_as = np.logspace(-22, -18, 2000)
@@ -754,7 +767,7 @@ def main():
         plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / T_to_eV2 / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
         plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / T_to_eV2 / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
-    plot_polar = True
+    plot_polar = False
     if plot_polar:
         # Polar coordinate plane
         r_ps = np.linspace(0 * r_c, 8000 * pc_to_m * m_to_eVminus1, 2000)
@@ -770,28 +783,20 @@ def main():
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_mag / T_to_eV2 / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_d_theta) / T_to_eV2 / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1\theta, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1\theta, \vec{A}'}|$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
 
-    plot_radial = True
+    plot_radial = False
     if plot_radial:
         # Plot B1 versus r_p
-        r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 10000)
-        r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 10000)
+        r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 100000)
+        r_ps_res = np.linspace(1 * r_c, 1.5 * r_c, 100000)
         f, m_a, m_D = gen_params("flat")
         B1r_ps_a = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps])
         B1r_ps_d = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps])
-        B1r_ps_a_res = np.array([calculate_B1("flat", "axion", 0, m_a, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps_res])
-        B1r_ps_d_res = np.array([calculate_B1("flat", "dark photon", 0, m_D, f, epsilon, r_p, np.pi / 2, 0, B_bar)[0] for r_p in r_ps_res])
 
         # Plot B1 versus r_p for axion
         plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a / T_to_eV2 / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}.png", xlog=True, save=True)
         
-        # Restrict the r_p range for plotting
-        plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_a_res / T_to_eV2 / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, a}|$ (G)", r"Radial profile of $|\vec{B}_{1, a}|$", f"B1vsrpflataxionm{m_a}res.png", save=True)
-        
         # Plot B1 versus r_p for dark photon
         plot_data(r_ps / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d / T_to_eV2 / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}.png", xlog=True, save=True)
-        
-        # Restrict the r_p range for plotting
-        plot_data(r_ps_res / (1000 * pc_to_m * m_to_eVminus1), B1r_ps_d_res / T_to_eV2 / 1e-4, "", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Radial profile of $|\vec{B}_{1, \vec{A}'}|$", f"B1vsrpflatdarkphotonm{m_D}res.png", save=True)
 
     # Calculate the period of oscillation
     period = 2 * np.pi / omega / s_to_eVminus1
