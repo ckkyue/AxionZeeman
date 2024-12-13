@@ -173,12 +173,13 @@ def calculate_gac(potential_type, f):
     return g_ac
 
 # Calculate the integral
-def calculate_I(r_p, r_cutoff, omega):
+def calculate_I(r_p, r_cutoff, omega, field_type):
     """
     Args:
         r_p (array-like or float): Distance(s) of measurement point(s) from Galactic Centre.
         r_cutoff (float): Cutoff radius.
         omega (float): Oscillation frequency.
+        field_type (str): Indicate the integral corresponds to magnetic (B) or electric (E) field.
 
     Returns:
         array or float: Integral(s).
@@ -193,34 +194,35 @@ def calculate_I(r_p, r_cutoff, omega):
     # Calculate the core part
     greater = r_p >= r_cutoff
 
-    # I_core_out = (8 * j * a * np.exp(j * r_p * omega) * r_c**2 * np.sin(r_c * omega)) / ((1 + a * r_c**2)**6 * r_p * omega**2)
-    I_core_out = j * a * np.exp(j * r_p * omega) * (j + r_p * omega) * (r_c * (15 * a * (- 3 + a * r_c**2) * (- 1 + 3 * a * r_c**2) 
-            + 8 * (3 - 7 * a * r_c**2) * omega**2) * np.cos(r_c * omega) 
-            + omega * (- 9 + r_c**2 * (21 * a * (6 - 5 * a * r_c**2) + 8 * (1 + a * r_c**2) * omega**2)) * np.sin(r_c * omega)) / (r_p**2 * (omega + a * r_c**2 * omega)**6)
-    
-    I_core_in_1 = - (a * (15 * a * (- 3 + a * r_p**2) * (- 1 + 3 * a * r_p**2) + 5 * (3 + 7 * a * r_p**2 * (2 - 3 * a * r_p**2)) * omega**2 + 8 * r_p**2 * (1 + a * r_p**2) * omega**4)) / (r_p * (1 + a * r_p**2)**6 * omega**6)
-    
-    I_core_in_2 = a * np.exp(j * r_c * omega) * (45 * 1j * a**3 * r_c**5 - 15 * a**2 * r_c**3 * (10 * j + 7 * r_c * omega) + omega * (- 9 + 8 * r_c * omega * (3 * j + r_c * omega)) + 
-                                                 a * r_c * (45 * j + 2 * r_c * omega * (63 + 4 * r_c * omega * (-7 * 1j + r_c * omega)))) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / ((1 + a * r_c**2)**6 * r_p**2 * omega**6)
+    if field_type == "B":
+        # I_core_out = (8 * j * a * np.exp(j * r_p * omega) * r_c**2 * np.sin(r_c * omega)) / ((1 + a * r_c**2)**6 * r_p * omega**2)
+        I_core_out = j * a * np.exp(j * r_p * omega) * (j + r_p * omega) * (r_c * (15 * a * (- 3 + a * r_c**2) * (- 1 + 3 * a * r_c**2) 
+                + 8 * (3 - 7 * a * r_c**2) * omega**2) * np.cos(r_c * omega) 
+                + omega * (- 9 + r_c**2 * (21 * a * (6 - 5 * a * r_c**2) + 8 * (1 + a * r_c**2) * omega**2)) * np.sin(r_c * omega)) / (r_p**2 * (omega + a * r_c**2 * omega)**6)
+        
+        I_core_in_1 = - (a * (15 * a * (- 3 + a * r_p**2) * (- 1 + 3 * a * r_p**2) + 5 * (3 + 7 * a * r_p**2 * (2 - 3 * a * r_p**2)) * omega**2 + 8 * r_p**2 * (1 + a * r_p**2) * omega**4)) / (r_p * (1 + a * r_p**2)**6 * omega**6)
+        
+        I_core_in_2 = a * np.exp(j * r_c * omega) * (45 * 1j * a**3 * r_c**5 - 15 * a**2 * r_c**3 * (10 * j + 7 * r_c * omega) + omega * (- 9 + 8 * r_c * omega * (3 * j + r_c * omega)) + 
+                                                    a * r_c * (45 * j + 2 * r_c * omega * (63 + 4 * r_c * omega * (-7 * 1j + r_c * omega)))) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / ((1 + a * r_c**2)**6 * r_p**2 * omega**6)
 
-    I_core_in = I_core_in_1 + I_core_in_2
+        I_core_in = I_core_in_1 + I_core_in_2
 
-    # Calculate the tail part
-    # I_tail_out = - 3 * j * np.exp(j * r_p * omega) * np.sin(r_c * omega) / (2 * r_p * omega**2)
+        # Calculate the tail part
+        # I_tail_out = - 3 * j * np.exp(j * r_p * omega) * np.sin(r_c * omega) / (2 * r_p * omega**2)
 
-    I_tail_out_1 = np.exp(- j * r_p * omega) * r_c**(3 / 2) * ((16 + 16 * j) * np.sqrt(2 * np.pi) * r_p**(11 / 2) * omega**(11 / 2) * (- j + r_p * omega) 
-                                                         + (16 + 16 * j) * np.exp(2 * j * r_p * omega) * np.sqrt(2 * np.pi) * r_p**(11 / 2) * omega**(11 / 2) * (j + r_p * omega) 
-                                                         + 3 * np.exp(3 * j * r_p * omega) * (j + r_p * omega) * (315 + 2 * r_p * omega * (35 * j + 2 * r_p * omega * (- 5 - 2 * j * r_p * omega))) 
-                                                         - 3 * np.exp(j * r_p * omega) * (315 * j + r_p * omega * (385 + 2 * r_p * omega * (- 45 * j + 2 * r_p * omega * (- 7 + 2 * r_p * omega * (j + 4 * r_p * omega)))))) / (64 * r_p**(15 / 2) * omega**7)
-    
-    I_tail_out_2 = 3 * np.exp(j * r_p * omega) * (1 - j * r_p * omega) * ((70 * r_c * omega - 8 * r_c**3 * omega**3) * np.cos(r_c * omega) + 
-                                                                  (315 - 20 * r_c**2 * omega**2 + 16 * r_c**4 * omega**4) * np.sin(r_c * omega)) / (32 * r_c**4 * r_p**2 * omega**7)
-    
-    I_tail_out_3 = - (1 + j) * np.sqrt(np.pi / 2) * (r_c / omega)**(3 / 2) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / r_p**2
+        I_tail_out_1 = np.exp(- j * r_p * omega) * r_c**(3 / 2) * ((16 + 16 * j) * np.sqrt(2 * np.pi) * r_p**(11 / 2) * omega**(11 / 2) * (- j + r_p * omega) 
+                                                            + (16 + 16 * j) * np.exp(2 * j * r_p * omega) * np.sqrt(2 * np.pi) * r_p**(11 / 2) * omega**(11 / 2) * (j + r_p * omega) 
+                                                            + 3 * np.exp(3 * j * r_p * omega) * (j + r_p * omega) * (315 + 2 * r_p * omega * (35 * j + 2 * r_p * omega * (- 5 - 2 * j * r_p * omega))) 
+                                                            - 3 * np.exp(j * r_p * omega) * (315 * j + r_p * omega * (385 + 2 * r_p * omega * (- 45 * j + 2 * r_p * omega * (- 7 + 2 * r_p * omega * (j + 4 * r_p * omega)))))) / (64 * r_p**(15 / 2) * omega**7)
+        
+        I_tail_out_2 = 3 * np.exp(j * r_p * omega) * (1 - j * r_p * omega) * ((70 * r_c * omega - 8 * r_c**3 * omega**3) * np.cos(r_c * omega) + 
+                                                                    (315 - 20 * r_c**2 * omega**2 + 16 * r_c**4 * omega**4) * np.sin(r_c * omega)) / (32 * r_c**4 * r_p**2 * omega**7)
+        
+        I_tail_out_3 = - (1 + j) * np.sqrt(np.pi / 2) * (r_c / omega)**(3 / 2) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / r_p**2
 
-    I_tail_out = I_tail_out_1 + I_tail_out_2 + I_tail_out_3
+        I_tail_out = I_tail_out_1 + I_tail_out_2 + I_tail_out_3
 
-    I_tail_in = - 3 * np.exp(j * r_c * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (2 * r_p**2 * omega**3)
+        I_tail_in = - 3 * np.exp(j * r_c * omega) * (r_p * omega * np.cos(r_p * omega) - np.sin(r_p * omega)) / (2 * r_p**2 * omega**3)
     
     I_out = I_core_out + 1 / (1 + a * r_cutoff**2)**4 * I_tail_out
 
@@ -285,7 +287,7 @@ def calculate_B1(potential_type, particle_type, t, m, f, epsilon, r_p, theta_p, 
             coeff = epsilon * m**2 * A0 # Coefficient for dark photon
         
         # Calculate the integral based on the cutoff radius
-        I = calculate_I(r_p, r_cutoff, omega)
+        I = calculate_I(r_p, r_cutoff, omega, "B")
 
         # Compute the magnitudes of the B1 components
         B1_x_complex = coeff * np.exp(- j * omega * t) * I * (np.cos(theta_p) * B_bar_y - np.sin(theta_p) * np.sin(phi_p) * B_bar_z)
@@ -766,7 +768,7 @@ def main():
     elif particle_type == "dark photon":
         m, omega = m_D, m_D
 
-    plot_params = True
+    plot_params = False
     if plot_params:
         # Parameter space
         m_as = np.logspace(-22, -18, 2000)
@@ -782,7 +784,7 @@ def main():
         plot2D_data(np.log10(m_as), np.log10(fs), np.log10(B1params_a / T_to_eV2 / 1e-4), r"$m_a$ (eV)", r"$f_a$ (eV)", r"$|\vec{B}_{1, a}| (G)$", r"$|\vec{B}_{1, a}|$ across parameter space", "B1paramsaxion.png", xlog=True, ylog=True, zlog=True, save=True)
         plot2D_data(np.log10(m_Ds), np.log10(epsilons), np.log10(B1params_d / T_to_eV2 / 1e-4), r"$m_D$ (eV)", r"$\varepsilon$", r"$|\vec{B}_{1, \vec{A}'}| (G)$", r"$|\vec{B}_{1, \vec{A}'}|$ across parameter space", "B1paramsdarkphoton.png", xlog=True, ylog=True, zlog=True, save=True)
 
-    plot_polar = True
+    plot_polar = False
     if plot_polar:
         # Polar coordinate plane
         r_ps = np.linspace(0 * r_c, 8000 * pc_to_m * m_to_eVminus1, 2000)
@@ -798,7 +800,7 @@ def main():
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(B1polar_d_mag / T_to_eV2 / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1, \vec{A}'}|$", "B1polardarkphoton.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
         plot2D_data(phi_ps, r_ps / (1000 * pc_to_m * m_to_eVminus1), np.log10(np.abs(B1polar_d_theta) / T_to_eV2 / 1e-4), r"$\phi$ (rad)", r"$r_p/\mathrm{kpc}$", r"$|\vec{B}_{1\theta, \vec{A}'}|$ (G)", r"Polar plot of $|\vec{B}_{1\theta, \vec{A}'}|$", "B1polardarkphotontheta.png", plotstyle="contourf-polar", levels=20, zlog=True, logdp=1, save=True)
 
-    plot_radial = True
+    plot_radial = False
     if plot_radial:
         # Plot B1 versus r_p
         r_ps = np.linspace(1 * r_c, 8000 * pc_to_m * m_to_eVminus1, 100000)
