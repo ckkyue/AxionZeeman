@@ -228,9 +228,9 @@ def calculate_I(r_p, r_cutoff, omega, field_type):
         # Calculate the core part
         I_core_out = 1 / (np.sqrt(2) * (1 + a * r_c**2)**6 * r_p**3 * omega**7) * j * np.exp(j * r_p * omega) * (r_c * (r_p**2 * omega**6 + 2 * a * r_p**2 * omega**4 * (8 + r_c**2 * omega**2) - 150 * a**3 * r_c**2 * (- 1 + r_p * omega * (j + r_p * omega)) + 45 * a**4 * r_c**4 * (- 1 + r_p * omega * (j + r_p * omega)) + a**2 * (- 45 + omega * (80 * r_c**2 * omega + r_p * (45 * j + omega * (- 80 * j * r_c**2 * omega + r_p * (45 - 64 * r_c**2 * omega**2 + r_c**4 * omega**4)))))) * np.cos(r_c * omega) + omega * (- r_p**2 * omega**4 - 105 * a**3 * r_c**4 * (- 1 + r_p * omega * (j + r_p * omega)) + a * (- 15 + r_p * omega * (15 * j - r_p * omega + 6 * r_c**2 * r_p * omega**3)) + a**2 * r_c**2 * (- 150 + r_p * omega * (150 * j + 134 * r_p * omega + 7 * r_c**2 * r_p * omega**3))) * np.sin(r_c * omega))
          
-        I_core_in_1 = (j * r_p * (15 * a**2 * (- 3 + a * r_p**2) * (- 1 + 3 * a * r_p**2) + 8 * a * (3 - 7 * a * r_p**2) * omega**2 + (1 + a * r_p**2)**2 * omega**4)) / ((1 + a * r_p**2)**6 * np.sqrt(2) * r_p * omega**5)
+        I_core_in_1 = j * r_p * (15 * a**2 * (- 3 + a * r_p**2) * (- 1 + 3 * a * r_p**2) + 8 * a * (3 - 7 * a * r_p**2) * omega**2 + (1 + a * r_p**2)**2 * omega**4) / ((1 + a * r_p**2)**6 * np.sqrt(2) * r_p * omega**5)
 
-        I_core_in_2 = np.exp(j * r_c * omega) * (45 * a**4 * r_c**5 + 15 * a**3 * r_c**3 * (- 10 + 7 * j * r_c * omega) + omega**3 * (j + r_c * omega) + a * omega * (9 * j + 2 * r_c * omega * (12 + r_c * omega * (- 3 * j + r_c * omega))) + a**2 * r_c * (45 + r_c * omega * (- 126 * j + r_c * omega * (- 56 + r_c * omega * (- 7 * j + r_c * omega))))) * np.sin(r_p * omega) / ((1 + a * r_c**2)**6 * np.sqrt(2) * r_p * omega**5)
+        I_core_in_2 = - np.exp(j * r_c * omega) * (45 * a**4 * r_c**5 + 15 * a**3 * r_c**3 * (- 10 + 7 * j * r_c * omega) + omega**3 * (j + r_c * omega) + a * omega * (9 * j + 2 * r_c * omega * (12 + r_c * omega * (- 3 * j + r_c * omega))) + a**2 * r_c * (45 + r_c * omega * (- 126 * j + r_c * omega * (- 56 + r_c * omega * (- 7 * j + r_c * omega))))) * np.sin(r_p * omega) / ((1 + a * r_c**2)**6 * np.sqrt(2) * r_p * omega**5)
 
         I_core_in = I_core_in_1 + I_core_in_2
 
